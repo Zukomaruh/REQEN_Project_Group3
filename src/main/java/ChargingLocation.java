@@ -1,0 +1,2 @@
+public class ChargingLocation {
+}
