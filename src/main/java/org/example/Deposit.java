@@ -1,3 +1,5 @@
+package org.example;
+
 import org.example.enums.DepositStatus;
 import org.example.enums.PaymentMethod;
 
