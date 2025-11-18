@@ -15,7 +15,7 @@ public class ChargingStation {
     private PricingStrategy pricing;
 
     public ChargingStation(Long stationId, Long locationId, String stationName, StationType type, Integer capacity, StationStatus status, PricingStrategy pricing) {
-        this.stationId = stationId;
+        setStationId(stationId);
         this.locationId = locationId;
         this.stationName = stationName;
         this.type = type;
@@ -29,7 +29,11 @@ public class ChargingStation {
     }
 
     public void setStationId(Long stationId) {
-        this.stationId = stationId;
+        if(ManageSerialNumbers.isSerialNumberUnique(stationId)){
+            this.stationId = stationId;
+        }else {
+            System.out.println("Serial number should be unique");
+        }
     }
 
     public Long getLocationId() {

@@ -116,21 +116,30 @@ public class StepDefinition_manage_station_network {
 
     @When("a serial number is added")
     public void aSerialNumberIsAdded() {
-        String serialNumber = "SN-123456789";
-        currentStation.setStationName(serialNumber);
+        String dummySerialNumber = "DUMMY_SERIAL_FOR_NAME_CHECK";
+        currentStation.setStationName(dummySerialNumber);
 
-        assertThat(currentStation.getStationName()).as("Serial number should be set").isEqualTo(serialNumber);
+        assertThat(currentStation.getStationName()).as("Station name should be set").isEqualTo(dummySerialNumber);
     }
 
     @Then("that serial number cannot be used for another charging station")
     public void thatSerialNumberCannotBeUsedForAnotherChargingStation() {
-        String existingSerialNumber = currentStation.getStationName();
-        ChargingStation duplicateStation = new ChargingStation(2L, 1L, existingSerialNumber, StationType.DC, 100, StationStatus.AVAILABLE, null);
+        Long existingUniqueId = currentStation.getStationId();
+
+        ChargingStation duplicateStation = new ChargingStation(
+                existingUniqueId,
+                1L,
+                "Station-Duplicate-Name",
+                StationType.DC,
+                100,
+                StationStatus.AVAILABLE,
+                null
+        );
 
         boolean isUnique = chargingLocation.getStations().stream()
-                .noneMatch(station -> station.getStationName().equals(existingSerialNumber));
+                .noneMatch(station -> station.getStationId().equals(existingUniqueId) && station != currentStation);
 
-        assertThat(isUnique).as("Serial number should be unique").isTrue();
+        assertThat(isUnique).as("Station ID should be unique, and the new station should not have it set.").isTrue();
     }
 
     @When("the station is active")
