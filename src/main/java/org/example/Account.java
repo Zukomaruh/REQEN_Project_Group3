@@ -11,20 +11,35 @@ public class Account {
     private boolean active;
 
     public boolean validateCredentials(String inputPassword) {
-        return false;
+        if (this.password == null || inputPassword == null) {
+            return false;
+        }
+        return this.password.equals(inputPassword);
     }
 
     public boolean isOwner() {
-        return false;
+        return SessionStatus.UserRole.OWNER.equals(this.role);
     }
 
     public boolean isCustomer() {
-        return false;
+        return SessionStatus.UserRole.CUSTOMER.equals(this.role);
     }
 
     public void updateProfile(String email, String username) {
-
+        if (email != null && !email.trim().isEmpty() && email.contains("@")) {
+            this.email = email;
+            System.out.println("Email updated to: " + email);
+        } else {
+            System.out.println("Invalid email provided: " + email);
+        }
+        if (username != null && !username.trim().isEmpty() && username.length() >= 3) {
+            this.username = username;
+            System.out.println("Username updated to: " + username);
+        } else {
+            System.out.println("Invalid username provided: " + username);
+        }
     }
+
 
     public Long getUserId() {
         return userId;
@@ -80,5 +95,23 @@ public class Account {
         this.password = password;
         this.role = role;
         this.active = active;
+    }
+
+    public boolean isValidAccount() {
+        return username != null && !username.trim().isEmpty() &&
+                email != null && email.contains("@") && email.contains(".") &&
+                password != null && password.length() >= 8 &&
+                role != null;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", active=" + active +
+                '}';
     }
 }
