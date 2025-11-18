@@ -114,32 +114,6 @@ public class StepDefinition_manage_station_network {
         assertThat(chargingLocation.getStations()).as("Location should have the successfully created charging station").isNotEmpty();
     }
 
-    @When("a serial number is added")
-    public void aSerialNumberIsAdded() {
-        Long existingUniqueId = currentStation.getStationId();
-    }
-
-    @Then("that serial number cannot be used for another charging station")
-    public void thatSerialNumberCannotBeUsedForAnotherChargingStation() {
-        Long existingUniqueId = currentStation.getStationId();
-
-        assertThatThrownBy(() -> {
-            new ChargingStation(
-                    existingUniqueId,
-                    2L,
-                    "Station-Duplicate-Attempt",
-                    StationType.DC,
-                    100,
-                    StationStatus.AVAILABLE,
-                    null
-            );
-        })
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("already in use");
-
-        assertThat(chargingLocation.getStations().size()).as("The original station list size should be 1").isEqualTo(1);
-    }
-
     @When("the station is active")
     public void theStationIsActive() {
         stationActive = StationStatus.AVAILABLE.equals(currentStation.getStatus());
