@@ -1,4 +1,4 @@
-package enums;
+package org.example.enums;
 
 public enum StationStatus {
     AVAILABLE, CHARGING, MAINTENANCE, OFFLINE;

@@ -1,5 +1,7 @@
-import enums.SessionStatus;
-import enums.StationStatus;
+package org.example;
+
+import org.example.enums.SessionStatus;
+import org.example.enums.StationStatus;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package enums;
+package org.example.enums;
 
 public enum DepositStatus {
     PENDING,        // Deposit initiated but not completed

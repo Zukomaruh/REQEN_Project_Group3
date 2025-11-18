@@ -1,4 +1,6 @@
-import enums.StationStatus;
+package org.example;
+
+import org.example.enums.StationStatus;
 
 public class InvoiceItem {
     private Long itemId;
