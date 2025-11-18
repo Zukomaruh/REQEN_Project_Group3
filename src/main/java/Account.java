@@ -1,29 +1,28 @@
-import java.time.LocalDateTime;
+import enums.SessionStatus;
 
 public class Account {
-    private Long accountId;
     private Long userId;
-    private Double balance;
+    private String username;
+    private String email;
+    private String password;
+    private SessionStatus.UserRole role; // OWNER, CUSTOMER
+    private boolean active;
 
-    private LocalDateTime lastDepositDate;
-
-    public void deposit(Double amount) {
-
-    }
-
-    public void withdraw(Double amount) {
-
-    }
-
-    public boolean hasSufficientBalance(Double amount) {
+    public boolean validateCredentials(String inputPassword) {
         return false;
     }
 
-    public void applyTransaction(Transaction transaction) {
+    public boolean isOwner() {
+        return false;
+    }
+
+    public boolean isCustomer() {
+        return false;
+    }
+
+    public void updateProfile(String email, String username) {
 
     }
 
-    public Double getAvailableBalance() {
-        return null;
-    }
+
 }
