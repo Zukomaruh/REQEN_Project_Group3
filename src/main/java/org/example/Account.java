@@ -1,4 +1,6 @@
-import enums.SessionStatus;
+package org.example;
+
+import org.example.enums.SessionStatus;
 
 public class Account {
     private Long userId;

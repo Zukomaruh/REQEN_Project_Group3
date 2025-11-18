@@ -1,5 +1,7 @@
-import enums.ChargingMode;
-import enums.SessionStatus;
+package org.example;
+
+import org.example.enums.ChargingMode;
+import org.example.enums.SessionStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

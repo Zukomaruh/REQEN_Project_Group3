@@ -1,4 +1,6 @@
-import enums.InvoiceStatus;
+package org.example;
+
+import org.example.enums.InvoiceStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,5 +1,5 @@
-import enums.DepositStatus;
-import enums.PaymentMethod;
+import org.example.enums.DepositStatus;
+import org.example.enums.PaymentMethod;
 
 import java.time.LocalDateTime;
 

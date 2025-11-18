@@ -6,11 +6,11 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class StepDefinition_account_management {
-    @Given("I want to create a new Account with valid user credentials")
+    @Given("I want to create a new org.example.Account with valid user credentials")
     public void iWantToCreateANewAccountWithValidUserCredentials() {
     }
 
-    @When("I create a new Account")
+    @When("I create a new org.example.Account")
     public void iCreateANewAccount() {
     }
 
@@ -22,7 +22,7 @@ public class StepDefinition_account_management {
     public void theUserCredentialsAreStoredInTheSystem() {
     }
 
-    @Given("I want to create a new Account with invalid user credentials")
+    @Given("I want to create a new org.example.Account with invalid user credentials")
     public void iWantToCreateANewAccountWithInvalidUserCredentials() {
     }
 
@@ -30,11 +30,11 @@ public class StepDefinition_account_management {
     public void anErrorMessageIsDisplayed() {
     }
 
-    @Given("I already have an Account")
+    @Given("I already have an org.example.Account")
     public void iAlreadyHaveAnAccount() {
     }
 
-    @When("I request the Account information")
+    @When("I request the org.example.Account information")
     public void iRequestTheAccountInformation() {
     }
 
