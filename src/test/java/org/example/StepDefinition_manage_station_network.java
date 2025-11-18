@@ -111,35 +111,33 @@ public class StepDefinition_manage_station_network {
         currentStation = new ChargingStation(1L, 1L, "Station-001", StationType.AC, 50, StationStatus.AVAILABLE, null);
         chargingLocation.addStation(currentStation);
 
-        assertThat(chargingLocation.getStations()).as("Location should have charging station").isNotEmpty();
+        assertThat(chargingLocation.getStations()).as("Location should have the successfully created charging station").isNotEmpty();
     }
 
     @When("a serial number is added")
     public void aSerialNumberIsAdded() {
-        String dummySerialNumber = "DUMMY_SERIAL_FOR_NAME_CHECK";
-        currentStation.setStationName(dummySerialNumber);
-
-        assertThat(currentStation.getStationName()).as("Station name should be set").isEqualTo(dummySerialNumber);
+        Long existingUniqueId = currentStation.getStationId();
     }
 
     @Then("that serial number cannot be used for another charging station")
     public void thatSerialNumberCannotBeUsedForAnotherChargingStation() {
         Long existingUniqueId = currentStation.getStationId();
 
-        ChargingStation duplicateStation = new ChargingStation(
-                existingUniqueId,
-                1L,
-                "Station-Duplicate-Name",
-                StationType.DC,
-                100,
-                StationStatus.AVAILABLE,
-                null
-        );
+        assertThatThrownBy(() -> {
+            new ChargingStation(
+                    existingUniqueId,
+                    2L,
+                    "Station-Duplicate-Attempt",
+                    StationType.DC,
+                    100,
+                    StationStatus.AVAILABLE,
+                    null
+            );
+        })
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("already in use");
 
-        boolean isUnique = chargingLocation.getStations().stream()
-                .noneMatch(station -> station.getStationId().equals(existingUniqueId) && station != currentStation);
-
-        assertThat(isUnique).as("Station ID should be unique, and the new station should not have it set.").isTrue();
+        assertThat(chargingLocation.getStations().size()).as("The original station list size should be 1").isEqualTo(1);
     }
 
     @When("the station is active")
