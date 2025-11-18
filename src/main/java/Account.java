@@ -4,7 +4,7 @@ public class Account {
     private Long accountId;
     private Long userId;
     private Double balance;
-    //private AccountType type; // PREPAID, POSTPAID
+
     private LocalDateTime lastDepositDate;
 
     public void deposit(Double amount) {

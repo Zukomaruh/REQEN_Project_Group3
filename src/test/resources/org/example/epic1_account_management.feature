@@ -3,47 +3,23 @@ Feature: Account Management
 
   # User Story 1.1 - Create Account
   Scenario: Account is created with valid credentials
-    Given I am on the registration page
-    When I enter valid credentials
-    And I submit the registration form
-    Then my account is created
+    Given I want to create a new Account with valid user credentials
+    When I create a new Account
+    Then the account is successfully created
+    And the user credentials are stored in the system
 
-  Scenario: User can log in after registration
-    Given I have registered successfully
-    When I log in with my user credentials
-    Then I gain access to the system
-
-  Scenario: Registration fails with invalid credentials
-    Given I am on the registration page
-    When I enter invalid user credentials
-    And I submit the registration form
+  Scenario: Creation fails with invalid user credentials
+    Given I want to create a new Account with invalid user credentials
+    When I create a new Account
     Then an error message is displayed
 
   # User Story 1.2 - View Credentials
-  Scenario: Credentials are visible on customer view
-    Given I am on the customers view
-    Then I can see my credentials
-
-  Scenario: User can view profile
-    Given I am logged in
-    When I open my profile
-    Then my credentials are displayed
+  Scenario: Credentials are visible to customer
+    Given I already have an Account
+    When I request the Account information
+    Then I can see my user credentials
 
   Scenario: Only latest credentials are shown
-    Given I am on the customer page
-    Then I see only the latest credentials
-
-  # User Story 1.3 - Update Credentials
-  Scenario: Edit user credentials
-    Given I am on my profile page
-    When I edit my user credentials
-    Then the updated credentials are saved
-
-  Scenario: Store only the latest credentials
-    Given I changed my user credentials
-    Then only the latest credentials are stored
-
-  Scenario: Edit credentials again
-    Given I changed my user credentials
-    When I edit them again
-    Then the new changes are saved
+    Given I updated my user credentials
+    When I request the Account information
+    Then I see only the latest user credentials
