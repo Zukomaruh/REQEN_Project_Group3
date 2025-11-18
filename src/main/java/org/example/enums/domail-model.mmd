@@ -1,0 +1,168 @@
+classDiagram
+
+%% =====================
+%% CLASSES
+%% =====================
+
+    class Account {
+        Long userId
+        String username
+        String email
+        String password
+        UserRole role
+        boolean active
+
+        +boolean validateCredentials(String inputPassword)
+        +boolean isOwner()
+        +boolean isCustomer()
+        +void updateProfile(String email, String username)
+        +boolean isValidAccount()
+    }
+
+    class ChargingLocation {
+        Long locationId
+        String name
+        String address
+
+        +void addStation(ChargingStation station)
+        +void removeStation(Long stationId)
+        +List~ChargingStation~ getStations()
+    }
+
+    class ChargingStation {
+        Long stationId
+        Long locationId
+        String stationName
+        StationType type
+        Integer capacity
+        StationStatus status
+        PricingStrategy pricing
+
+        +boolean isAvailable()
+        +boolean supportsType(StationType type)
+        +Double calculateCost(Double energyConsumed, Duration duration)
+        +void updateStatus(StationStatus newStatus)
+        +String getInformation()
+    }
+
+    class PricingStrategy {
+        Long pricingId
+        Long stationId
+        Double pricePerKwh
+        Double fixedFee
+        Double timeBasedRate
+        LocalDateTime effectiveFrom
+        LocalDateTime effectiveTo
+
+        +boolean isActive()
+        +Double calculateEnergyCost(Double energyConsumed)
+        +Double calculateTimeCost(Duration duration)
+        +Double calculateTotalCost(Double energyConsumed, Duration duration)
+    }
+
+    class ManageSerialNumbers {
+        +List~Long~ getStationSerialNumbers()
+        +void removeSerialNumber(Long serialNumber)
+        +void recordSerialNumber(Long serialNumber)
+        +boolean isSerialNumberUnique(Long serialNumber)
+        +void reset()
+    }
+
+    class Main {
+        +void main(String[] args)
+    }
+
+%% =====================
+%% ENUMS (NO ANNOTATION)
+%% =====================
+
+    class ChargingMode {
+        FAST
+        STANDARD
+        ECO
+    }
+
+    class DepositStatus {
+        PENDING
+        SUCCESS
+        FAILED
+        CANCELLED
+    }
+
+    class InvoiceStatus {
+        PENDING
+        PAID
+        OVERDUE
+        CANCELLED
+    }
+
+    class PaymentMethod {
+        CREDIT_CARD
+        DEBIT_CARD
+        PAYPAL
+        BANK_TRANSFER
+        APPLE_PAY
+        GOOGLE_PAY
+    }
+
+    class SessionStatus {
+        ACTIVE
+        COMPLETED
+        CANCELLED
+        INTERRUPTED
+    }
+
+    class UserRole {
+        OWNER
+        CUSTOMER
+    }
+
+    class TransactionType {
+        DEPOSIT
+        WITHDRAWAL
+        PAYMENT
+    }
+
+    class StationStatus {
+        AVAILABLE
+        CHARGING
+        MAINTENANCE
+        OFFLINE
+    }
+
+    class TransactionStatus {
+        PENDING
+        PAID
+        OVERDUE
+        CANCELLED
+    }
+
+    class ItemType {
+        ENERGY
+        TIME
+        SERVICE_FEE
+    }
+
+    class StationType {
+        AC
+        DC
+    }
+
+%% =====================
+%% RELATIONSHIPS
+%% =====================
+
+    ChargingLocation o-- ChargingStation : contains
+
+    ChargingStation --> PricingStrategy : pricing
+    ChargingStation --> StationType
+    ChargingStation --> StationStatus
+
+    Account --> SessionStatus
+    SessionStatus --> UserRole
+    SessionStatus --> TransactionType
+
+    StationStatus --> TransactionStatus
+    StationStatus --> ItemType
+
+    ChargingStation ..> ManageSerialNumbers : serial uniqueness
