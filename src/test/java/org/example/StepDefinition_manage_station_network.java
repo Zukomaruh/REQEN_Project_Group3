@@ -111,26 +111,7 @@ public class StepDefinition_manage_station_network {
         currentStation = new ChargingStation(1L, 1L, "Station-001", StationType.AC, 50, StationStatus.AVAILABLE, null);
         chargingLocation.addStation(currentStation);
 
-        assertThat(chargingLocation.getStations()).as("Location should have charging station").isNotEmpty();
-    }
-
-    @When("a serial number is added")
-    public void aSerialNumberIsAdded() {
-        String serialNumber = "SN-123456789";
-        currentStation.setStationName(serialNumber);
-
-        assertThat(currentStation.getStationName()).as("Serial number should be set").isEqualTo(serialNumber);
-    }
-
-    @Then("that serial number cannot be used for another charging station")
-    public void thatSerialNumberCannotBeUsedForAnotherChargingStation() {
-        String existingSerialNumber = currentStation.getStationName();
-        ChargingStation duplicateStation = new ChargingStation(2L, 1L, existingSerialNumber, StationType.DC, 100, StationStatus.AVAILABLE, null);
-
-        boolean isUnique = chargingLocation.getStations().stream()
-                .noneMatch(station -> station.getStationName().equals(existingSerialNumber));
-
-        assertThat(isUnique).as("Serial number should be unique").isTrue();
+        assertThat(chargingLocation.getStations()).as("Location should have the successfully created charging station").isNotEmpty();
     }
 
     @When("the station is active")

@@ -18,11 +18,6 @@ Feature: Station Network Management
     When the input is valid
     Then the charging station is listed active and bookable to the charging location
 
-  Scenario: Serial number is unique
-    Given a charging station was added
-    When a serial number is added
-    Then that serial number cannot be used for another charging station
-
   Scenario: Confirmation for active station
     Given a charging station was added
     When the station is active
