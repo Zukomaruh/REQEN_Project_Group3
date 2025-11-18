@@ -93,12 +93,12 @@ public class ChargingStation {
     }
 
     public void updateStatus(StationStatus newStatus) {
-
+        this.status = newStatus;
     }
 
     public String getInformation(){
         return String.format("StationID: %d, LocationID: %d, Name: %s, Type: %s, Capacity: %d, Status: %s"
-        ,stationId, locationId, stationName, type, capacity, status);
+                ,stationId, locationId, stationName, type, capacity, status);
     }
 
     public boolean isUnderMaintenance() {

@@ -72,6 +72,7 @@ public class StepDefinition_choose_charging_option {
 
     @Given("charging station data changes")
     public void chargingStationDataChanges() {
+        iHaveAnAccount();
         updatedStation = stations.get(0);
         updatedStation.updateStatus(StationStatus.CHARGING);
     }
@@ -94,6 +95,7 @@ public class StepDefinition_choose_charging_option {
 
     @Given("I have chosen a Charging Location")
     public void iHaveChosenAChargingLocation() {
+        iHaveAnAccount();
         selectedLocation = location;
     }
 
