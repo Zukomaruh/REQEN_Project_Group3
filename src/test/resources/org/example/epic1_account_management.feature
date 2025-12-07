@@ -1,25 +1,62 @@
 Feature: Account Management
-  The application allows customers to register, view, and update their account credentials.
+  As a customer, I want to manage an account so that I can easily handle my payment and preferences.
 
-  # User Story 1.1 - Create Account
-  Scenario: Account is created with valid credentials
-    Given I want to create a new Account with valid user credentials
-    When I create a new Account
-    Then the account is successfully created
-    And the user credentials are stored in the system
+  # User Story 1.1 - set user credentials
+  Scenario: set Account with valid user credentials
+  As a customer
+  I want to set my user credentials when I create an account
+  so that I can create an Account successfully.
+    Given The customer is on the systems main class
+    When the customer registers a new account with the username "Max Mustermann"
+    And enters the email "max.musterman@email.com"
+    And enters the password "testpassword123"
+    And the role is set to "CUSTOMER"
+    Then an Account with the username "Max Mustermann" is successfully created.
+    And a confirmation message is printed that says "Your account has been created"
 
-  Scenario: Creation fails with invalid user credentials
-    Given I want to create a new Account with invalid user credentials
-    When I create a new Account
-    Then an error message is displayed
+  Scenario: set Account with invalid user credentials
+    Given the customer is on the system main class
+    When the customer registers a new account with the username "123"
+    And enters the email "foo"
+    And enters the password "lessthan12"
+    Then the Account is not created
+    And an error message is printed that says "Please enter valid username, email or password"
 
-  # User Story 1.2 - View Credentials
+  # User Story 1.2 - read user credentials
   Scenario: Credentials are visible to customer
-    Given I already have an Account
-    When I request the Account information
-    Then I can see my user credentials
+  As a customer
+  I want to read my user credentials
+  so that I can check if they are still up to date.
+    Given An Account exists with the following user credentials:
+      | Field      | Value                    |
+      | username   | Fiona Fantasie           |
+      | email      | fiona.fantasie@email.com |
+      | role       | CUSTOMER                 |
+      | status     | active                   |
+    When the Account information is requested
+    Then the output is:
+    """
+    userID: <generated_ID>
+    username: Fiona Fantasie
+    email: fiona.fantasie@email.com
+    role: CUSTOMER
+    status: active
+    """
 
   Scenario: Only latest credentials are shown
-    Given I updated my user credentials
-    When I request the Account information
-    Then I see only the latest user credentials
+    Given There exists an Account with the following user credentials:
+      | Field      | Value                      |
+      | username   | Johannes Joghurt           |
+      | email      | johannes.joghurt@email.com |
+      | role       | CUSTOMER                   |
+      | status     | active                     |
+    When the email is updated to "jo.jo@email.com"
+    And the Account information is requested
+    Then the output is:
+    """
+    userID: <generated_ID>
+    username: Johannes Joghurt
+    email: jo.jo@email.com
+    role: CUSTOMER
+    status: active
+    """
