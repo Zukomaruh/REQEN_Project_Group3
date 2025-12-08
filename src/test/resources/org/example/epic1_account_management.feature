@@ -11,6 +11,7 @@ Feature: Account Management
     And enters the email "max.musterman@email.com"
     And enters the password "testpassword123"
     And the role is set to "CUSTOMER"
+    # role must be CUSTOMER or OWNER
     Then an Account with the username "Max Mustermann" is successfully created.
     And a confirmation message is printed that says "Your account has been created"
 
@@ -52,7 +53,7 @@ Feature: Account Management
       | status     | active                     |
     When the email is updated to "jo.jo@email.com"
     And the Account information is requested
-    Then the output is:
+    Then the updated output is:
     """
     userID: <generated_ID>
     username: Johannes Joghurt
