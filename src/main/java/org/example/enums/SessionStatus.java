@@ -6,8 +6,4 @@ public enum SessionStatus {
     public enum TransactionType {
         DEPOSIT, WITHDRAWAL, PAYMENT
     }
-
-    public enum UserRole {
-        OWNER,CUSTOMER
-    }
 }

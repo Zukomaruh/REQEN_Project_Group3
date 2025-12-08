@@ -6,15 +6,15 @@ import org.example.enums.StationType;
 import java.time.Duration;
 
 public class ChargingStation {
-    private Long stationId;
-    private Long locationId;
+    private long stationId;
+    private long locationId;
     private String stationName;
     private StationType type; // AC, DC
     private Integer capacity; // kW
     private StationStatus status; // AVAILABLE, CHARGING, MAINTENANCE, OFFLINE
-    private PricingStrategy pricing;
+    private float pricing;
 
-    public ChargingStation(Long stationId, Long locationId, String stationName, StationType type, Integer capacity, StationStatus status, PricingStrategy pricing) {
+    public ChargingStation(Long stationId, long locationId, String stationName, StationType type, Integer capacity, StationStatus status, float pricing) {
         setStationId(stationId);
         this.locationId = locationId;
         this.stationName = stationName;
@@ -29,11 +29,7 @@ public class ChargingStation {
     }
 
     public void setStationId(Long stationId) {
-        if(ManageSerialNumbers.isSerialNumberUnique(stationId)){
-            this.stationId = stationId;
-        }else {
-            System.out.println("Serial number should be unique");
-        }
+        this.stationId = stationId;
     }
 
     public Long getLocationId() {
@@ -76,11 +72,11 @@ public class ChargingStation {
         this.status = status;
     }
 
-    public PricingStrategy getPricing() {
+    public float getPricing() {
         return pricing;
     }
 
-    public void setPricing(PricingStrategy pricing) {
+    public void setPricing(float pricing) {
         this.pricing = pricing;
     }
 
