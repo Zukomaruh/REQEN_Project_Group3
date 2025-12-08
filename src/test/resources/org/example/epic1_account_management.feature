@@ -1,7 +1,7 @@
 Feature: Account Management
   As a customer, I want to manage an account so that I can easily handle my payment and preferences.
 
-  # User Story 1.1 - set user credentials
+  # User Story 1.1 - create user credentials
   Scenario: set Account with valid user credentials
   As a customer
   I want to set my user credentials when I create an account
