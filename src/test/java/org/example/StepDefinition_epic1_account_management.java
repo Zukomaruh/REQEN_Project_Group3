@@ -12,6 +12,7 @@ public class StepDefinition_epic1_account_management {
 
     @When("the customer registers a new account with the username {string}")
     public void theCustomerRegistersANewAccountWithTheUsername(String arg0) {
+
     }
 
     @And("enters the email {string}")

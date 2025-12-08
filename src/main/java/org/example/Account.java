@@ -1,15 +1,61 @@
 package org.example;
 
+import org.example.enums.AccountType;
 import org.example.enums.SessionStatus;
 
 public class Account {
-    private Long userId;
+    private long userId;
     private String username;
     private String email;
     private String password;
-    private SessionStatus.UserRole role; // OWNER, CUSTOMER
+    private AccountType role; // OWNER, CUSTOMER
     private boolean active;
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRole(AccountType role) {
+        this.role = role;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public AccountType getRole() {
+        return role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    /*
     public boolean validateCredentials(String inputPassword) {
         if (this.password == null || inputPassword == null) {
             return false;
@@ -18,11 +64,11 @@ public class Account {
     }
 
     public boolean isOwner() {
-        return SessionStatus.UserRole.OWNER.equals(this.role);
+        return AccountType.OWNER.equals(this.role);
     }
 
     public boolean isCustomer() {
-        return SessionStatus.UserRole.CUSTOMER.equals(this.role);
+        return AccountType.CUSTOMER.equals(this.role);
     }
 
     public void updateProfile(String email, String username) {
@@ -57,7 +103,7 @@ public class Account {
         return password;
     }
 
-    public SessionStatus.UserRole getRole() {
+    public AccountType getRole() {
         return role;
     }
 
@@ -81,7 +127,7 @@ public class Account {
         this.password = password;
     }
 
-    public void setRole(SessionStatus.UserRole role) {
+    public void setRole(AccountType role) {
         this.role = role;
     }
 
@@ -89,7 +135,7 @@ public class Account {
         this.active = active;
     }
 
-    public Account(String username, String email, String password, SessionStatus.UserRole role, boolean active) {
+    public Account(String username, String email, String password, AccountType role, boolean active) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -114,4 +160,6 @@ public class Account {
                 ", active=" + active +
                 '}';
     }
+
+ */
 }
