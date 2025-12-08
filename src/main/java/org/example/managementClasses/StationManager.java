@@ -51,12 +51,10 @@ public class StationManager {
         long newStationId = stationIdCounter++;
 
         ChargingStation station = new ChargingStation(
-                newStationId,
                 (locationId == null ? 0L : locationId),
                 name,
                 type,
                 capacity,
-                StationStatus.AVAILABLE,
                 (float) pricing
         );
 
