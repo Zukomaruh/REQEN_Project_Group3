@@ -10,17 +10,17 @@ public class ChargingStation {
     private long locationId;
     private String stationName;
     private StationType type; // AC, DC
-    private Integer capacity; // kW
+    private int capacity; // kW
     private StationStatus status; // AVAILABLE, CHARGING, MAINTENANCE, OFFLINE
     private float pricing;
 
-    public ChargingStation(Long stationId, long locationId, String stationName, StationType type, Integer capacity, StationStatus status, float pricing) {
-        setStationId(stationId);
+    public ChargingStation(long locationId, String stationName, StationType type, Integer capacity, float pricing) {
+        this.stationId = System.currentTimeMillis();
         this.locationId = locationId;
         this.stationName = stationName;
         this.type = type;
         this.capacity = capacity;
-        this.status = status;
+        this.status = StationStatus.AVAILABLE;
         this.pricing = pricing;
     }
 

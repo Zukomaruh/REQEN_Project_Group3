@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChargingLocation {
@@ -8,11 +9,11 @@ public class ChargingLocation {
     private String address;
     private List<ChargingStation> stations;
 
-    public ChargingLocation(Long locationId, String name, String address, List<ChargingStation> stations) {
-        this.locationId = locationId;
+    public ChargingLocation(String name, String address) {
+        this.locationId = System.currentTimeMillis();
         this.name = name;
         this.address = address;
-        this.stations = stations;
+        this.stations = new ArrayList<>();
     }
 
     public Long getLocationId() {
