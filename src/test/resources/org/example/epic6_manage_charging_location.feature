@@ -12,14 +12,14 @@ Feature: Station Network Management
     When the owner creates a charging location with the name "Simmering"
     And enters the address "Industriezeile 45, 1110 Wien"
     Then a charging Location with the name "Simmering" with an empty Charging Station List is created successfully
-    And a confirmation message is printed that says "Charging Location created successfully"
+    And a confirmation is printed that says "Charging Location created successfully"
 
   Scenario: create Charging Location with invalid input fails
     Given the owner is on the system main class.
     When the owner creates a charging location with the name ""
     And enters the address ""
     Then no charging location is created
-    And an error message is printed that says "Invalid Input, Location not created"
+    And an error is printed that says "Invalid Input, Location not created"
 
   # User Story 6.2 – read Charging Locations
   Scenario: read charging locations
@@ -28,7 +28,7 @@ Feature: Station Network Management
   so that I can access the stored network information
     Given these charging locations exist:
       | name                  | address                            | stations              |
-      | "St Pölten"           | "Landstaße 42, 3100 St Pölten"     | [station1, station2]  |
+      | "St Pölten"           | "Landstraße 42, 3100 St Pölten"     | [station1, station2]  |
       | "Wien Hauptbahnhof"   | "Favoritenstraße 51, 1100 Wien"    | []                    |
     When the system retrieves all charging locations
     Then the output looks like this:

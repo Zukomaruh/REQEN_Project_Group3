@@ -53,6 +53,7 @@ classDiagram
         Double timeBasedRate
         LocalDateTime effectiveFrom
         LocalDateTime effectiveTo
+        ItemType pricingTotal
 
         +boolean isActive()
         +Double calculateEnergyCost(Double energyConsumed)
@@ -162,7 +163,8 @@ classDiagram
     SessionStatus --> UserRole
     SessionStatus --> TransactionType
 
-    StationStatus --> TransactionStatus
-    StationStatus --> ItemType
+    ChargingStation --> TransactionStatus
+
+    PricingStrategy --> ItemType
 
     ChargingStation ..> ManageSerialNumbers : serial uniqueness
