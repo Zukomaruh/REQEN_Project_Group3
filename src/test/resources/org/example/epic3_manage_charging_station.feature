@@ -20,7 +20,7 @@ Feature: Charging Station
   Scenario: create charging station without location ID
     Given the owner is on the system
     When the owner creates a charging station with the name "station02"
-    And the type AC
+    And the type "AC"
     And the capacity 145
     And the pricing of 0,30
     Then a new charging station with the name "station01", an unique stationID and the status AVAILABLE is created.
@@ -30,7 +30,7 @@ Feature: Charging Station
     Given a charging location exists with locationId 1002
     When the owner creates a charging station with the name ""
     And the locationID 1002
-    And the type AC
+    And the type "AC"
     And the capacity 30000
     And the pricing of 4000
     Then no charging station is created

@@ -4,6 +4,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.datatable.DataTable;
 import org.example.enums.AccountType;
 import org.example.enums.StationStatus;
 import org.example.enums.StationType;
@@ -96,7 +97,7 @@ public class StepDefinition_epic3_manage_charging_station {
     }
 
     @Given("these charging location exist:")
-    public void theseChargingLocationExist() {
+    public void theseChargingLocationExist(DataTable datatable) {
     }
 
     @And("these stations exist:")
