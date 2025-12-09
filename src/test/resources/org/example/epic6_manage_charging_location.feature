@@ -47,3 +47,17 @@ Feature: Station Network Management
     stations:
     ---
     """
+
+
+    # User Story 6.3 Update Locations
+  Scenario: Update existing Charging Location with valid value
+  As an owner
+  I want to update a charging station
+  so that its information remains correct and up to date.
+    Given a location exists with the following values:
+      | name                  | address                            | stations              |
+      | "Südbahnhof"          | "Landstraße 42, 3100 St Pölten"    | station01, station02  |
+    When the name is updated to "Hauptbahnhof"
+    And the Locations information is requested
+    Then it contains "Hauptbahnhof"
+    And does not contain "Südbahnhof"
