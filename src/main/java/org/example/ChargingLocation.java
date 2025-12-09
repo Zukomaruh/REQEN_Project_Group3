@@ -20,7 +20,7 @@ public class ChargingLocation {
     private final Long locationId;
     private String name;
     private String address;
-    private final List<String> stations = new ArrayList<>();
+    private final List<ChargingStation> stations = new ArrayList<>();
 
     public ChargingLocation(Long locationId, String name, String address) {
         this.locationId = Objects.requireNonNull(locationId, "locationId must not be null");
@@ -43,21 +43,15 @@ public class ChargingLocation {
     /**
      * Gibt eine unveränderliche Sicht auf die Stations-Liste zurück.
      */
-    public List<String> getStations() {
+    public List<ChargingStation> getStations() {
         return Collections.unmodifiableList(stations);
     }
 
     /**
      * Fügt einen Station-Namen hinzu (nur für Tests / Demo).
      */
-    public void addStation(String stationName) {
-        if (stationName == null) {
-            return;
-        }
-        String trimmed = stationName.trim();
-        if (!trimmed.isEmpty()) {
-            stations.add(trimmed);
-        }
+    public void addStation(ChargingStation newStation) {
+        stations.add(newStation);
     }
 
     @Override

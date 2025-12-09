@@ -8,14 +8,14 @@ Feature: Station Network Management
   As an owner
   I want to create a charging location
   so that the system stores a new place where stations can be installed.
-    Given the owner is on the system main class.
+    Given owner is on the system main class.
     When the owner creates a charging location with the name "Simmering"
     And enters the address "Industriezeile 45, 1110 Wien"
     Then a charging Location with the name "Simmering" with an empty Charging Station List is created successfully
     And a confirmation is printed that says "Charging Location created successfully"
 
   Scenario: create Charging Location with invalid input fails
-    Given the owner is on the system main class.
+    Given owner is on the system main class.
     When the owner creates a charging location with the name ""
     And enters the address ""
     Then no charging location is created
@@ -28,10 +28,10 @@ Feature: Station Network Management
   so that I can access the stored network information
     Given these charging locations exist:
       | name                  | address                            | stations              |
-      | "St Pölten"           | "Landstraße 42, 3100 St Pölten"     | [station1, station2]  |
+      | "St Pölten"           | "Landstraße 42, 3100 St Pölten"    | [station1, station2]  |
       | "Wien Hauptbahnhof"   | "Favoritenstraße 51, 1100 Wien"    | []                    |
     When the system retrieves all charging locations
-    Then the output looks like this:
+    Then the console shows this:
     """
     ---
     locationID: <generated_ID>

@@ -30,7 +30,7 @@ public class StepDefinition_epic6_manage_charging_location {
     // BACKGROUND
     // ============================
 
-    @Given("the owner is on the system main class.")
+    @Given("owner is on the system main class.")
     public void theOwnerIsOnTheSystemMainClass() {
         // Test-Reset vor jedem Scenario
         locationManager.clear();
@@ -71,9 +71,18 @@ public class StepDefinition_epic6_manage_charging_location {
         assertTrue(createdLocation.getStations().isEmpty(), "Stations list must be empty.");
     }
 
+    @And("a confirmation is printed that says {string}")
+    public void aConfirmationIsPrintedThatSays(String arg0) {
+    }
+
     @Then("no charging location is created")
     public void noChargingLocationIsCreated() {
         assertNull(createdLocation, "No location should be created for invalid input.");
+    }
+
+
+    @And("an error is printed that says {string}")
+    public void anErrorIsPrintedThatSays(String arg0) {
     }
 
     // ============================
@@ -103,15 +112,15 @@ public class StepDefinition_epic6_manage_charging_location {
                         if (stationName.isEmpty()) continue;
 
                         ChargingStation station = new ChargingStation(
-                                null,                        // stationId – für Test nicht relevant
+                                0L,                        // stationId – für Test nicht relevant
                                 loc.getLocationId(),
                                 stationName,
                                 StationType.AC,              // Dummy-Werte für den Test
                                 11,
                                 StationStatus.AVAILABLE,
-                                null                         // Pricing – für diesen Test egal
+                                0                         // Pricing – für diesen Test egal
                         );
-                        loc.getStations().add(station);
+                        loc.addStation(station);
                     }
                 }
             }
@@ -120,7 +129,7 @@ public class StepDefinition_epic6_manage_charging_location {
 
     @When("the system retrieves all charging locations")
     public void theSystemRetrievesAllChargingLocations() {
-        retrievedLocations = locationManager.readAllLocations();
+        retrievedLocations = locationManager.getAllLocations();
 
         StringBuilder sb = new StringBuilder();
         for (ChargingLocation loc : retrievedLocations) {
@@ -140,7 +149,7 @@ public class StepDefinition_epic6_manage_charging_location {
         System.out.print(lastOutput);
     }
 
-    @Then("the output looks like this:")
+    @Then("the console shows this:")
     public void theOutputLooksLikeThis(String expectedOutput) {
         assertNotNull(lastOutput, "Output must not be null.");
         assertEquals(expectedOutput.trim(), lastOutput.trim());

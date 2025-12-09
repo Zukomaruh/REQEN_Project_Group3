@@ -6,14 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * ChargingLocationManager (Singleton)
- * -----------------------------------
- * Verantwortlich für das CRUD-Management der Charging Locations.
- *  - createLocation(name, address)
- *  - getAllLocations()
- *  - clear()   (wird in den Cucumber-Tests für Reset verwendet)
- */
 public class ChargingLocationManager {
 
     // ==========================
@@ -29,12 +21,15 @@ public class ChargingLocationManager {
     private ChargingLocationManager() {
     }
 
+
+
     // ==========================
     // FIELDS
     // ==========================
 
-    private final List<ChargingLocation> locations = new ArrayList<>();
+    private List<ChargingLocation> locations = new ArrayList<>();
     private long idCounter = 1L;
+
 
     // ==========================
     // CRUD – CREATE
