@@ -44,9 +44,13 @@ public class ChargingLocationManager {
             return null;
         }
 
-        ChargingLocation location = new ChargingLocation(idCounter++, name.trim(), address.trim());
+        ChargingLocation location = new ChargingLocation(name.trim(), address.trim());
         locations.add(location);
         return location;
+    }
+
+    public void addLocation(ChargingLocation newLocation){
+        locations.add(newLocation);
     }
 
     // ==========================

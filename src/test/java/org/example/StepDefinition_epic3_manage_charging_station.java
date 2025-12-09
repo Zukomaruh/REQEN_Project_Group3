@@ -17,8 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class StepDefinition_epic3_manage_charging_station {
-    ChargingLocation location = new ChargingLocation("Meidling", "Bahnhofsplatz 9, 1120 Wien, Österreich");
+    ChargingLocation location;
     ChargingStation station;
+    ChargingStation station02;
     String name;
     long locationID;
     StationType type;
@@ -28,9 +29,11 @@ public class StepDefinition_epic3_manage_charging_station {
     String locationName;
     String locationAddress;
     List<ChargingStation> locationStations;
+    String expectedOutput;
 
     @Given("a charging location exists with locationId {long}")
     public void aChargingLocationExistsWithLocationId(long arg0) {
+        location  = new ChargingLocation("Meidling", "Bahnhofsplatz 9, 1120 Wien, Österreich");
         location.setLocationId(arg0);
     }
 
@@ -70,9 +73,27 @@ public class StepDefinition_epic3_manage_charging_station {
         assertEquals(StationStatus.AVAILABLE, station.getStatus());
     }
 
+    @Then("a new charging station with the name {string}, and without and locationID is created.")
+    public void aNewChargingStationWithTheNameAndWithoutAndLocationIDIsCreated(String arg0) {
+        station = new ChargingStation(name, type, capacity, pricing);
+        assertEquals(arg0, station.getStationName());
+        assertEquals(StationStatus.AVAILABLE, station.getStatus());
+    }
+
     @And("the station is added to the List of the location with locationId {int}")
     public void theStationIsAddedToTheListOfTheLocationWithLocationId(int arg0) {
         assertTrue(location.getStations().contains(station));
+    }
+
+    @And("a station confirmation is printed that says {string}")
+    public void aStationConfirmationIsPrintedThatSays(String arg0) {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        new ChargingStation(locationID, name, type, capacity, pricing);
+        System.setOut(originalOut);
+        String output = outContent.toString();
+        assertTrue(output.contains(arg0));
     }
 
     @Given("the owner is on the system")
@@ -81,8 +102,8 @@ public class StepDefinition_epic3_manage_charging_station {
 
     @Then("no charging station is created")
     public void noChargingStationIsCreated() {
-        station = new ChargingStation(locationID, name, type, capacity, pricing);
-        assertEquals(0, station.getStationId());
+        station02 = new ChargingStation(locationID, name, type, capacity, pricing);
+        assertEquals(0, station02.getStationId());
     }
 
     @And("an error massage is printed that says {string}")
@@ -98,25 +119,95 @@ public class StepDefinition_epic3_manage_charging_station {
 
     @Given("these charging location exist:")
     public void theseChargingLocationExist(DataTable datatable) {
+        List<Map<String, String>> chargingLocations = datatable.asMaps(String.class, String.class);
+        for (Map<String, String> locationMap : chargingLocations) {
+            locationName = locationMap.get("name");
+            locationAddress = locationMap.get("address");
+            //String stations = locationMap.get("stations");
+            location = new ChargingLocation(locationName, locationAddress);
+        }
+
     }
 
     @And("these stations exist:")
-    public void theseStationsExist() {
+    public void theseStationsExist(DataTable table) {
+        List<Map<String, String>> data = table.asMaps(String.class, String.class); // <-- Ihre Änderung
+
+        // Die Schleife muss nun über die Elemente der Liste iterieren,
+        // nicht nur hartkodiert 2 Mal laufen.
+        //AKTUELle Zeile abrufen
+        for (Map<String, String> currentStationData : data) {
+            // Alle 'data.get(...)' Aufrufe müssen auf 'currentStationData.get(...)' geändert werden.
+            name = currentStationData.get("stationName");
+
+            if (Objects.equals(currentStationData.get("type"), "AC")) {
+                type = StationType.AC;
+            } else {
+                type = StationType.DC;
+            }
+            capacity = Integer.parseInt(currentStationData.get("capacity"));
+
+            // ... (Rest der Logik mit currentStationData)
+            pricing = Float.parseFloat(currentStationData.get("pricing"));
+            // Erstellen der Stationen
+            ChargingStation currentStation = new ChargingStation(
+                    location.getLocationId(), name, type, capacity, pricing
+            );
+            if(!Objects.equals(currentStationData.get("status").toUpperCase(), "AVAILABLE")){
+               currentStation.setStatus(StationStatus.CHARGING);
+            }
+
+            // Hinzufügen der Stationen
+            location.addStation(currentStation);
+
+            // Die ursprünglichen Variablen 'station' und 'station02' werden hier
+            // ersetzt, da die Liste direkt iteriert wird.
+
+        }
     }
 
     @When("the customer requests the charging stations information")
     public void theCustomerRequestsTheChargingStationsInformation() {
+        locationStations = location.getStations();
+        StringBuilder result = new StringBuilder();
+        for (ChargingStation locationStation : locationStations) {
+            result.append(locationStation.getInformation());
+        }
+        expectedOutput = result.toString();
     }
 
     @Then("the output looks like this:")
-    public void theOutputLooksLikeThis() {
+    public void theOutputLooksLikeThis(String arg0) {
+        assertEquals(arg0, expectedOutput);
     }
 
-    @When("the pricing of the charging station {string} is updated to {double}")
-    public void thePricingOfTheChargingStationIsUpdatedTo(String arg0, int arg1, int arg2) {
+    @When("the pricing of the charging station {string} is updated to {float}")
+    public void thePricingOfTheChargingStationIsUpdatedTo(String arg0, float arg1) {
+        for (int i = 0; i < location.getStations().size(); i++){
+            if(Objects.equals(location.getStations().get(i).getStationName(), arg0)){
+                location.getStations().get(i).setPricing(arg1);
+            }
+        }
     }
 
     @And("the information is requested")
     public void theInformationIsRequested() {
+        locationStations = location.getStations();
+        StringBuilder result = new StringBuilder();
+        for (ChargingStation locationStation : locationStations) {
+            result.append(locationStation.getInformation());
+        }
+        expectedOutput = result.toString();
+    }
+
+    @And("a station hint message is printed that says {string}")
+    public void aStationHintMessageIsPrintedThatSays(String arg0) {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        new ChargingStation(name, type, capacity, pricing);
+        System.setOut(originalOut);
+        String output = outContent.toString();
+        assertTrue(output.contains(arg0));
     }
 }
