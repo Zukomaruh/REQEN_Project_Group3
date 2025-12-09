@@ -8,6 +8,7 @@ import io.cucumber.datatable.DataTable;
 import org.example.enums.AccountType;
 import org.example.enums.StationStatus;
 import org.example.enums.StationType;
+import org.example.managementClasses.StationManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -209,5 +210,56 @@ public class StepDefinition_epic3_manage_charging_station {
         System.setOut(originalOut);
         String output = outContent.toString();
         assertTrue(output.contains(arg0));
+    }
+
+    @Given("an charging station exists with the id {long} and these values:")
+    public void anChargingStationExistsWithTheIdAntTheseValues(long arg0, DataTable dataTable) {
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+        Map<String, String> row = rows.get(0);
+        name = row.get("stationName");
+        type = StationType.valueOf(row.get("type"));
+        capacity = Integer.parseInt(row.get("capacity"));
+        status = StationStatus.valueOf(row.get("status"));
+        pricing = Float.parseFloat(row.get("pricing"));
+        station = new ChargingStation(name, type, capacity, pricing);
+        station.setStatus(status);
+    }
+
+    @When("the value {string} is updated to {string}")
+    public void theValueIsUpdatedTo(String arg0, String arg1) {
+        switch (arg0.trim().toLowerCase()){
+            case "stationname":
+                name = arg1;
+                station.setStationName(name);
+                break;
+            case "type":
+                type = StationType.valueOf(arg1);
+                station.setType(type);
+                break;
+            case "capacity":
+                capacity = Integer.parseInt(arg1);
+                station.setCapacity(capacity);
+                break;
+            case "status":
+                status = StationStatus.valueOf(arg1);
+                station.setStatus(status);
+                break;
+            case "pricing":
+                pricing = Float.parseFloat(arg1);
+                station.setPricing(pricing);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @And("the updated station value is requested")
+    public void theUpdatedStationValueIsRequested() {
+        expectedOutput = station.getInformation();
+    }
+
+    @Then("the output contains the station value {string}")
+    public void theOutputContainsTheStationValue(String arg0) {
+        assertTrue(expectedOutput.contains(arg0));
     }
 }

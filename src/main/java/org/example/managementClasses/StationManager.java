@@ -8,11 +8,15 @@ import org.example.enums.StationType;
 import java.util.*;
 
 public class StationManager {
-
+    private static final StationManager INSTANCE = new StationManager();
     private Map<Long, ChargingLocation> locations = new HashMap<>();
     private Map<Long, ChargingStation> stations = new LinkedHashMap<>(); // keep insertion order for predictable output
 
     private long stationIdCounter = 1;
+
+    public static StationManager getInstance() {
+        return INSTANCE;
+    }
 
     // Register a location in the system (used by step definitions or external setup)
     public void addLocation(ChargingLocation location) {
