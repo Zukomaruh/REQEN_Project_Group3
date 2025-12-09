@@ -88,3 +88,15 @@ Feature: Charging Station
     price: 0,50 EUR/kWh
     ---
     """
+  # User Story 7.3 Update Charging Station
+  Scenario: Update existing Charging Station with valid value
+  As an owner
+  I want to update a charging station
+  so that its configuration information remains correct and up to date.
+    Given an charging station exists with the id 1010 and these values:
+      | stationName       | type | capacity | status       | pricing   |
+      | station1010       | AC   | 150      | AVAILABLE    | 0.42      |
+    When the value "stationName" is updated to "station10"
+    # value must be stationName, type, capacity, status or pricing
+    And the updated station value is requested
+    Then the output contains the station value "station10"
