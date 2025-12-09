@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.managementClasses.ChargingLocationManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,20 +19,25 @@ import java.util.Objects;
  */
 public class ChargingLocation {
 
-    private final Long locationId;
+    private Long locationId;
     private String name;
     private String address;
-    private final List<ChargingStation> stations = new ArrayList<>();
+    private List<ChargingStation> stations = new ArrayList<>();
 
     public ChargingLocation(String name, String address) {
         this.locationId = System.currentTimeMillis();
         this.name = name;
         this.address = address;
         this.stations = new ArrayList<>();
+        ChargingLocationManager.getInstance().addLocation(this);
     }
 
     public Long getLocationId() {
         return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
     }
 
     public String getName() {
@@ -52,7 +59,9 @@ public class ChargingLocation {
      * Fügt einen Station-Namen hinzu (nur für Tests / Demo).
      */
     public void addStation(ChargingStation newStation) {
-        stations.add(newStation);
+        if (!stations.contains(newStation)) {
+                stations.add(newStation);
+        }
     }
 
     @Override

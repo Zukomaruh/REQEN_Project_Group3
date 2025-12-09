@@ -112,12 +112,11 @@ public class StepDefinition_epic6_manage_charging_location {
                         if (stationName.isEmpty()) continue;
 
                         ChargingStation station = new ChargingStation(
-                                0L,                        // stationId – für Test nicht relevant
+                                                        // stationId – für Test nicht relevant
                                 loc.getLocationId(),
                                 stationName,
                                 StationType.AC,              // Dummy-Werte für den Test
                                 11,
-                                StationStatus.AVAILABLE,
                                 0                         // Pricing – für diesen Test egal
                         );
                         loc.addStation(station);
