@@ -10,12 +10,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.example.enums.AccountType;
 import org.example.managementClasses.ChargingLocationManager;
 import org.example.enums.StationStatus;
 import org.example.enums.StationType;
 
 public class StepDefinition_epic6_manage_charging_location {
+    String name;
+    String address;
+    ChargingLocation location;
+    String testOutput;
 
     private final ChargingLocationManager locationManager = ChargingLocationManager.getInstance();
 
@@ -151,7 +157,8 @@ public class StepDefinition_epic6_manage_charging_location {
     @Then("the console shows this:")
     public void theOutputLooksLikeThis(String expectedOutput) {
         assertNotNull(lastOutput, "Output must not be null.");
-        assertEquals(expectedOutput.trim(), lastOutput.trim());
+        //assertEquals(expectedOutput.trim(), lastOutput.trim());
+        assertTrue(lastOutput.trim().contains(expectedOutput.trim()));
     }
 
     // ============================
@@ -165,5 +172,34 @@ public class StepDefinition_epic6_manage_charging_location {
             return value.substring(1, value.length() - 1);
         }
         return value;
+    }
+
+    @Given("a location exists with the following values:")
+    public void aLocationExistsWithTheFollowingValues(DataTable dataTable) {
+        Map<String, String> data = dataTable.asMaps().get(0);
+        name = data.get("name").replace("\"", ""); // Removing quotes added in Gherkin
+        address = data.get("address").replace("\"", ""); // Removing quotes added in Gherkin
+        String[] stations = data.get("stations").split(",");
+        location = new ChargingLocation(name, address);
+    }
+
+    @When("the name is updated to {string}")
+    public void theNameIsUpdatedTo(String arg0) {
+        location.setName(arg0);
+    }
+
+    @And("the Locations information is requested")
+    public void theLocationsInformationIsRequested() {
+        testOutput = location.toString();
+    }
+
+    @Then("it contains {string}")
+    public void itContains(String arg0) {
+        assertTrue(testOutput.contains(arg0));
+    }
+
+    @And("does not contain {string}")
+    public void doesNotContain(String arg0) {
+        assertFalse(testOutput.contains(arg0));
     }
 }

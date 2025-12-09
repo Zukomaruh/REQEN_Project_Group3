@@ -48,6 +48,18 @@ public class ChargingLocation {
         return address;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setStations(List<ChargingStation> stations) {
+        this.stations = stations;
+    }
+
     /**
      * Gibt eine unveränderliche Sicht auf die Stations-Liste zurück.
      */
