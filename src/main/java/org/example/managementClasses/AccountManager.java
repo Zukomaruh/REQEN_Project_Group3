@@ -52,10 +52,18 @@ public class AccountManager {
     }
 
     public void updateAccount(AccountType role, long userId) {
-
+        for (Account account : accounts) {
+            if (account.getUserId() == userId) {
+                account.setType(role);
+            }
+        }
     }
 
     public void updateAccount(boolean active, long userId) {
-
+        for (Account account : accounts) {
+            if (account.getUserId() == userId) {
+                account.setActive();
+            }
+        }
     }
 }
