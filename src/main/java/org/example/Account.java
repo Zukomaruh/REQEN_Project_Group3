@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.enums.AccountType;
 import org.example.enums.SessionStatus;
+import org.example.managementClasses.AccountManager;
 
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ public class Account {
             setPassword(password);
             setRole(role);
             this.active = true;
+            AccountManager.getInstance().addAccount(this);
             System.out.println("Your account has been created");
         }else{
             System.out.println("Please enter valid username, email or password");

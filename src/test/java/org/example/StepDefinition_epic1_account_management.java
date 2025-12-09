@@ -1,10 +1,12 @@
 package org.example;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.example.enums.AccountType;
+import org.example.managementClasses.AccountManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -21,6 +23,8 @@ public class StepDefinition_epic1_account_management {
     AccountType role;
     Account account;
     String testOutput;
+    long userId;
+    byte valueToUpdateAccount; //0 username, 1 email, 2 password, 3 role, 4 active
 
     @Given("The customer is on the systems main class")
     public void theCustomerIsOnTheSystemsMainClass() {
@@ -89,7 +93,7 @@ public class StepDefinition_epic1_account_management {
     }
 
     @Given("An Account exists with the following user credentials:")
-    public void anAccountExistsWithTheFollowingUserCredentials(io.cucumber.datatable.DataTable dataTable) {
+    public void anAccountExistsWithTheFollowingUserCredentials(DataTable dataTable) {
         Map<String, String> data = dataTable.asMap(String.class, String.class);
         username = data.get("username");
         email = data.get("email");
@@ -110,7 +114,7 @@ public class StepDefinition_epic1_account_management {
     }
 
     @Given("There exists an Account with the following user credentials:")
-    public void thereExistsAnAccountWithTheFollowingUserCredentials(io.cucumber.datatable.DataTable dataTable) {
+    public void thereExistsAnAccountWithTheFollowingUserCredentials(DataTable dataTable) {
         Map<String, String> data = dataTable.asMap(String.class, String.class);
         username = data.get("username");
         email = data.get("email");
@@ -128,5 +132,58 @@ public class StepDefinition_epic1_account_management {
     public void theUpdatedOutputIs(String expected) {
         expected = expected.replace("<generated_ID>", String.valueOf(account.getUserId()));
         assertEquals(expected, account.toString());
+    }
+
+    @Given("there exists an Account with the userID {int} and the following values:")
+    public void thereExistsAnAccountWithTheUserIDAndTheFollowingValues(int arg0, DataTable dataTable) {
+        Map<String, String> data = dataTable.asMap(String.class, String.class);
+        username = data.get("username");
+        email = data.get("email");
+        role = AccountType.valueOf(data.get("role"));
+        password = data.get("password");
+        account = new Account(username, email, password, role);
+    }
+
+    @When("the {string} is updated to {string}")
+    public void theIsUpdatedTo(String arg0, String arg1) {
+        switch (arg0.trim().toLowerCase()) {
+            case "username":
+                username = arg1;
+                valueToUpdateAccount = 0;
+                AccountManager.getInstance().updateAccount(username, account.getUserId());
+                break;
+            case "email":
+                email = arg1;
+                valueToUpdateAccount = 1;
+                AccountManager.getInstance().updateAccount(email, account.getUserId());
+                break;
+            case "password":
+                password = arg1;
+                valueToUpdateAccount = 2;
+                AccountManager.getInstance().updateAccount(password, account.getUserId());
+                break;
+            case "role":
+                role = AccountType.valueOf(arg1);
+                valueToUpdateAccount = 3;
+                AccountManager.getInstance().updateAccount(role, account.getUserId());
+                break;
+            case "active":
+                boolean active = Boolean.parseBoolean(arg1);
+                valueToUpdateAccount = 4;
+                AccountManager.getInstance().updateAccount(active, account.getUserId());
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @And("the updated value is requested")
+    public void theIsRequested() {
+        testOutput = AccountManager.getInstance().readAccount(account.getUserId()).toString();
+    }
+
+    @Then("the output contains the value {string}")
+    public void theOutputContainsTheValue(String arg0) {
+        assertTrue(testOutput.contains(arg0));
     }
 }

@@ -61,3 +61,18 @@ Feature: Account Management
     role: CUSTOMER
     status: active
     """
+
+  # User Story 1.3 Update Account
+  Scenario: Update Account with valid value
+  As a customer
+  I want to update my user credential
+  so that I can keep them up to date.
+    Given there exists an Account with the userID 1001 and the following values:
+      | Field      | Value                      |
+      | username   | Hans Hubert                |
+      | email      | hans.hubi@email.com        |
+      | role       | CUSTOMER                   |
+      | password   | hansiHuberti2344           |
+    When the "username" is updated to "Hans Hubertus"
+    And the updated value is requested
+    Then the output contains the value "Hans Hubertus"
