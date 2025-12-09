@@ -22,10 +22,11 @@ public class ChargingLocation {
     private String address;
     private final List<ChargingStation> stations = new ArrayList<>();
 
-    public ChargingLocation(Long locationId, String name, String address) {
-        this.locationId = Objects.requireNonNull(locationId, "locationId must not be null");
-        this.name = Objects.requireNonNull(name, "name must not be null");
-        this.address = Objects.requireNonNull(address, "address must not be null");
+    public ChargingLocation(String name, String address) {
+        this.locationId = System.currentTimeMillis();
+        this.name = name;
+        this.address = address;
+        this.stations = new ArrayList<>();
     }
 
     public Long getLocationId() {
