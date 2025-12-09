@@ -8,9 +8,22 @@ Feature: Manage Pricing of Charging Stations
   As owner
   I want to create new pricing rules for charging stations
   so that new tariffs can be introduced.
-    Given I am logged in as owner
-    When I open the pricing management page
-    Then I can create a new pricing rule (price per kWh, time-based blocks, flat fee, etc.) and assign it to one or multiple stations.
+    Given a pricing rule exists with the pricingId 1001
+    When I create a pricing rule with the name "pricingRule01"
+    And the pricingId 1001
+    And and the content "rule content"
+    And <label selected>
+    Then a new pricing rule with the name "pricingRule01", an unique pricingId and the status ACTIVE is created.
+
+    #the label "kWh", "AC", "kwh DC" or "Minuten pro Lademodus"
+  Scenario Outline:
+    Examples:
+      | label selected                      |
+      | "kWh" selected                      |
+      | "AC" selected                       |
+      | "kwh DC" selected                   |
+      | "Minuten pro Lademodus" selected    |
+
 
   Scenario: displaying confirmation message for valid pricing rule
     Given I save a new valid pricing rule
