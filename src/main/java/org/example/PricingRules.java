@@ -54,4 +54,10 @@ public class PricingRules {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public void setLocationId(int locationId) {
+        if(locationId > 0){
+            this.locationId = locationId;
+        }
+    }
 }

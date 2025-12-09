@@ -8,9 +8,9 @@ Feature: Manage Pricing of Charging Stations
   As owner
   I want to create new pricing rules for charging stations
   so that new tariffs can be introduced.
-    Given a charging station exists with the stationId 1001
+    Given a charging station exists with the stationId 1001 and other values
     When I create a pricing rule with the pricingId 1001
-    And the locationId 1001
+    And with the locationId 1001
     And the validFrom "DDMMYY"
     And the validTo "DDMMYY"
     And the priceComponents
@@ -21,12 +21,12 @@ Feature: Manage Pricing of Charging Stations
     When the input data is valid
     Then the pricing rule is added to the List of the pricing for the station
     And  isActive is true
-    And a confirmation message is printed that says "Pricing rule created successfully"
+    And a pricing confirmation message is printed that says "Pricing rule created successfully"
 
   Scenario: discard an invalid pricing rule
     Given a pricing rule is created with the pricingId 1001
     When the input data is invalid
-    Then an error message is printed that says "Creation failed! Please enter valid Station settings."
+    Then an pricing error message is printed that says "Creation failed! Please enter valid Station settings."
     And the invalid input is deleted
 
   # User Story 8.2 - Read Pricing
@@ -67,6 +67,6 @@ Feature: Manage Pricing of Charging Stations
   Scenario: updating pricing multiple times a day
     Given I have updated the pricing to 0,4
     When I want to update it again to 0,5
-    Then a confirmation message is printed that says "Pricing updates successfully."
+    Then a pricing confirmation message is printed that says "Pricing updates successfully."
     And the new pricing 0,5 is displayed
 
