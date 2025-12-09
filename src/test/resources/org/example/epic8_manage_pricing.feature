@@ -8,51 +8,45 @@ Feature: Manage Pricing of Charging Stations
   As owner
   I want to create new pricing rules for charging stations
   so that new tariffs can be introduced.
-    Given a pricing rule exists with the pricingId 1001
-    When I create a pricing rule with the name "pricingRule01"
-    And the pricingId 1001
-    And and the content "rule content"
-    And <label selected>
-    Then a new pricing rule with the name "pricingRule01", an unique pricingId and the status ACTIVE is created.
+    Given a charging station exists with the stationId 1001
+    When I create a pricing rule with the pricingId 1001
+    And the locationId 1001
+    And the validFrom "DDMMYY"
+    And the validTo "DDMMYY"
+    And the priceComponents
+    Then a new pricing rule is created
 
-    #the label "kWh", "AC", "kwh DC" or "Minuten pro Lademodus"
-  Scenario Outline:
-    Examples:
-      | label selected                      |
-      | "kWh" selected                      |
-      | "AC" selected                       |
-      | "kwh DC" selected                   |
-      | "Minuten pro Lademodus" selected    |
+  Scenario: save a valid pricing rule
+    Given a pricing rule is created with the pricingId 1001
+    When the input data is valid
+    Then the pricing rule is added to the List of the pricing for the station
+    And  isActive is true
+    And a confirmation message is printed that says "Pricing rule created successfully"
 
-
-  Scenario: displaying confirmation message for valid pricing rule
-    Given I save a new valid pricing rule
-    When the save is successful
-    Then a confirmation message is displayed and the rule is immediately active.
-
-  Scenario: displaying error message for invalid pricing rule
-    Given the pricing rule contains invalid values (e.g. negative price)
-    When I try to save
-    Then an error message is shown and the rule is not created.
+  Scenario: discard an invalid pricing rule
+    Given a pricing rule is created with the pricingId 1001
+    When the input data is invalid
+    Then an error message is printed that says "Creation failed! Please enter valid Station settings."
+    And the invalid input is deleted
 
   # User Story 8.2 - Read Pricing
   Scenario: view current pricing of selected charging station
-  As owner
-  I want to read the current pricing of charging stations
-  so that I can review or compare station rates.
-    Given I open the pricing overview
-    When I select a charging station
-    Then its current price per kWh and any active special rules are displayed.
+  As Owner
+  I want to read prices of locations
+  so that they can vary.
+    Given a charging station exists with the stationId 1001
+    When the pricingId 1001 being the current pricing is true
+    Then its current price 0,30 is displayed
 
-  Scenario: sort or filter pricing list
-    Given multiple charging stations are available
-    When I sort or filter by price
-    Then the list of stations is displayed in the chosen order.
+  Scenario: display latest pricing
+    Given a pricing exists with the pricingId 1001
+    When I update the pricing 0,3
+    Then the new pricing 0,4 is displayed
 
-  Scenario: refresh pricing data
-    Given pricing data might be outdated
-    When I refresh the page
-    Then the latest pricing information is retrieved from the database.
+  Scenario: delete pricing
+    Given delete the pricing with the pricingId 1001
+    When the the new pricingId is null
+    Then an error message is displayed that say "Deletion failed! Please enter valid Station settings."
 
 
 # User Story 8.3 - Update Pricing
@@ -60,18 +54,19 @@ Feature: Manage Pricing of Charging Stations
   As owner
   I want to update existing pricing rules
   so that price changes take effect immediately or at a scheduled time.
-    Given I am editing a pricing rule
-    When I change the price and save
-    Then the updated price is stored and visible to customers within ≤ 10 seconds.
+    Given the pricing rule with the pricingId 1001 is in use by active sessions
+    When I update the pricingId 1001 to 0,4
+    Then ongoing sessions continue with 0,3
+    And new sessions use 0,4
 
   Scenario: schedule future pricing rule activation
-    Given I schedule a price change for a future date
-    When that date is reached
-    Then the new price automatically becomes active without manual intervention.
+    Given chargingPoints is 2
+    When I update the pricing to 0,4
+    Then all chargingPoints should be updated to 0,4
 
-  Scenario: handle active sessions during pricing update
-    Given the pricing rule is in use by active sessions
-    When I update it
-    Then ongoing sessions continue with the old price and new sessions use the new price.
-
+  Scenario: updating pricing multiple times a day
+    Given I have updated the pricing to 0,4
+    When I want to update it again to 0,5
+    Then a confirmation message is printed that says "Pricing updates successfully."
+    And the new pricing 0,5 is displayed
 
