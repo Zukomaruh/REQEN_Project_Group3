@@ -103,4 +103,8 @@ public class Account {
                 "role: " + getRole() + "\n" +
                 "status: " + (getActive() ? "active" : "inactive");
     }
+
+    public void setType(AccountType role) {
+        this.role = role;
+    }
 }
