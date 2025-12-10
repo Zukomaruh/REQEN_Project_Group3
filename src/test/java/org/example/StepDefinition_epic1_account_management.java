@@ -24,7 +24,7 @@ public class StepDefinition_epic1_account_management {
     Account account;
     String testOutput;
     long userId;
-    byte valueToUpdateAccount; //0 username, 1 email, 2 password, 3 role, 4 active
+    byte valueToUpdateAccount;
 
     @Given("The customer is on the systems main class")
     public void theCustomerIsOnTheSystemsMainClass() {

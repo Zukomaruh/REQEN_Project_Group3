@@ -1,170 +1,230 @@
 classDiagram
-
 %% =====================
-%% CLASSES
+%% CORE DOMAIN ENTITIES
 %% =====================
 
     class Account {
-        Long userId
-        String username
-        String email
-        String password
-        UserRole role
-        boolean active
-
-        +boolean validateCredentials(String inputPassword)
-        +boolean isOwner()
-        +boolean isCustomer()
-        +void updateProfile(String email, String username)
-        +boolean isValidAccount()
+        +long userId
+        +String username
+        +String email
+        +String password
+        +AccountType role
+        +boolean active
     }
 
     class ChargingLocation {
-        Long locationId
-        String name
-        String address
-
-        +void addStation(ChargingStation station)
-        +void removeStation(Long stationId)
-        +List~ChargingStation~ getStations()
+        +Long locationId
+        +String name
+        +String address
+        +List~ChargingStation~ stations
     }
 
     class ChargingStation {
-        Long stationId
-        Long locationId
-        String stationName
-        StationType type
-        Integer capacity
-        StationStatus status
-        PricingStrategy pricing
-
-        +boolean isAvailable()
-        +boolean supportsType(StationType type)
-        +Double calculateCost(Double energyConsumed, Duration duration)
-        +void updateStatus(StationStatus newStatus)
-        +String getInformation()
+        +Long stationId
+        +Long locationId
+        +String stationName
+        +StationType type
+        +int capacityKW
+        +StationStatus status
+        +Double pricing
     }
 
-    class PricingStrategy {
-        Long pricingId
-        Long stationId
-        Double pricePerKwh
-        Double fixedFee
-        Double timeBasedRate
-        LocalDateTime effectiveFrom
-        LocalDateTime effectiveTo
-        ItemType pricingTotal
+    class ChargingProcess {
+        +Long sessionId
+        +Long customerId
+        +Long stationId
+        +String stationName
+        +ChargingMode mode
+        +int batteryPercentage
+        +int targetBatteryPercentage
+        +int powerKW
+        +int timeToFullMinutes
+        +int expectedRangeKm
+        +int drivenDistanceKm
+        +SessionStatus status
 
-        +boolean isActive()
-        +Double calculateEnergyCost(Double energyConsumed)
-        +Double calculateTimeCost(Duration duration)
-        +Double calculateTotalCost(Double energyConsumed, Duration duration)
+        +updateBatteryPercentage(int)
+        +complete()
+        +isDrivenDistanceWithinTolerance(int) boolean
     }
 
-    class ManageSerialNumbers {
-        +List~Long~ getStationSerialNumbers()
-        +void removeSerialNumber(Long serialNumber)
-        +void recordSerialNumber(Long serialNumber)
-        +boolean isSerialNumberUnique(Long serialNumber)
-        +void reset()
+    class PricingRules {
+        +int pricingId
+        +int locationId
+        +int validFrom
+        +int validTo
+        +boolean active
+        +List~PriceComponent~ priceComponents
     }
 
-    class Main {
-        +void main(String[] args)
+    class Invoice {
+        +String invoiceId
+        +Date startTime
+        +Date endTime
+        +double kWh
+        +int durationMinutes
+        +String mode
+        +String stationName
+        +double pricePerKWh
+        +double totalAmount
+        +InvoiceStatus status
+        +String pricingRuleId
     }
 
 %% =====================
-%% ENUMS (NO ANNOTATION)
+%% MANAGER / SERVICES
 %% =====================
 
-    class ChargingMode {
-        FAST
-        STANDARD
-        ECO
+    class AccountManager {
+        -List~Account~ accounts
+        +getInstance() AccountManager
+        +addAccount(Account)
+        +readAccount(long) Account
+        +updateAccount(boolean,long)
+        +updateAccount(String,long)
     }
 
-    class DepositStatus {
-        PENDING
-        SUCCESS
-        FAILED
-        CANCELLED
+    class ChargingLocationManager {
+        -List~ChargingLocation~ locations
+        -long idCounter
+        +getInstance() ChargingLocationManager
+        +createLocation(String,String) ChargingLocation
+        +addLocation(ChargingLocation)
+        +getAllLocations() List~ChargingLocation~
+        +clear()
     }
 
-    class InvoiceStatus {
-        PENDING
-        PAID
-        OVERDUE
-        CANCELLED
+    class StationManager {
+        -Map~Long,ChargingLocation~ locations
+        -Map~Long,ChargingStation~ stations
+        -long stationIdCounter
+        +getInstance() StationManager
+        +addLocation(ChargingLocation)
+        +createStation(Long,String,StationType,int,double) ChargingStation
+        +getAllStationInformation() String
+        +getStation(Long) ChargingStation
     }
 
-    class PaymentMethod {
-        CREDIT_CARD
-        DEBIT_CARD
-        PAYPAL
-        BANK_TRANSFER
-        APPLE_PAY
-        GOOGLE_PAY
+    class ChargingProcessManager {
+        -Map~Long,ChargingProcess~ processes
+        -long sessionIdCounter
+        +getInstance() ChargingProcessManager
+        +startProcess(Long,Long,String,ChargingMode,int,int,int,int) ChargingProcess
+        +getProcess(Long) ChargingProcess
+        +updateBatteryPercentage(Long,int)
+        +completeProcess(Long)
+        +getAllProcesses() Map~Long,ChargingProcess~
+        +clear()
     }
 
-    class SessionStatus {
-        ACTIVE
-        COMPLETED
-        CANCELLED
-        INTERRUPTED
+    class PricingManager {
+        -List~PricingRules~ pricingRules
+        +addPricingRule(PricingRules)
+        +getActivePricingRules() List~PricingRules~
+        +findPricingForLocation(int) PricingRules
     }
 
-    class UserRole {
-        OWNER
+    class InvoiceManager {
+        -List~Invoice~ invoices
+        -double currentPrice
+        +setCurrentPrice(double)
+        +createInvoiceFromSession(double,int,String,String,Date,Date,String)
+        +getInvoice(int) Invoice
+        +viewDetails(Invoice) String
+        +downloadPDF(Invoice) String
+        +viewHistory() String
+    }
+
+%% ==========
+%% ENUMS
+%% ==========
+
+    class AccountType {
+        <<enum>>
         CUSTOMER
+        OWNER
+        ADMIN
     }
 
-    class TransactionType {
-        DEPOSIT
-        WITHDRAWAL
-        PAYMENT
+    class StationType {
+        <<enum>>
+        AC
+        DC
+        HPC
     }
 
     class StationStatus {
+        <<enum>>
         AVAILABLE
         CHARGING
         MAINTENANCE
         OFFLINE
     }
 
-    class TransactionStatus {
-        PENDING
-        PAID
-        OVERDUE
+    class ChargingMode {
+        <<enum>>
+        FAST
+        STANDARD
+        ECO
+    }
+
+    class SessionStatus {
+        <<enum>>
+        ACTIVE
+        COMPLETED
         CANCELLED
+        INTERRUPTED
     }
 
-    class ItemType {
-        ENERGY
-        TIME
-        SERVICE_FEE
+    class PriceComponent {
+        <<enum>>
+        KWH_AC
+        KWH_DC
+        MINUTE_FEE
+        SESSION_FEE
     }
 
-    class StationType {
-        AC
-        DC
+    class InvoiceStatus {
+        <<enum>>
+        OPEN
+        PAID
+        CANCELLED
     }
 
 %% =====================
 %% RELATIONSHIPS
 %% =====================
 
-    ChargingLocation o-- ChargingStation : contains
+%% Accounts & Processes / Invoices
+    Account "1" --> "*" ChargingProcess : "customerId"
+    Account "1" --> "*" Invoice : "billed to"
 
-    ChargingStation --> PricingStrategy : pricing
+%% Locations & Stations
+    ChargingLocation "1" --> "*" ChargingStation : "stations"
+
+%% Stations & Processes
+    ChargingStation "1" --> "*" ChargingProcess : "used in"
+
+%% Locations & Pricing
+    ChargingLocation "1" --> "0..*" PricingRules : "pricing rules for location"
+    PricingRules "1" --> "*" PriceComponent : "uses"
+
+%% Processes & Invoices
+    ChargingProcess "1" --> "0..1" Invoice : "invoiced as"
+
+%% Managers & Entities
+    AccountManager ..> Account : "manages"
+    ChargingLocationManager ..> ChargingLocation : "manages"
+    StationManager ..> ChargingStation : "manages"
+    StationManager ..> ChargingLocation : "knows"
+    ChargingProcessManager ..> ChargingProcess : "manages"
+    PricingManager ..> PricingRules : "manages"
+    InvoiceManager ..> Invoice : "manages"
+
+%% Enums usage
+    Account --> AccountType
     ChargingStation --> StationType
     ChargingStation --> StationStatus
-
-    Account --> SessionStatus
-    SessionStatus --> UserRole
-    SessionStatus --> TransactionType
-
-    ChargingStation --> TransactionStatus
-
-    PricingStrategy --> ItemType
-
-    ChargingStation ..> ManageSerialNumbers : serial uniqueness
+    ChargingProcess --> ChargingMode
+    ChargingProcess --> SessionStatus
+    Invoice --> InvoiceStatus

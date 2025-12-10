@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StepDefinition_epic4_charging_process {
 
-    // Battery / charging process state
+
     private int initialBatteryLevel;
     private int currentBatteryLevel;
     private int targetBatteryLevel;
@@ -24,29 +24,29 @@ public class StepDefinition_epic4_charging_process {
     private boolean chargingProcessStarted;
     private String chargingStatus;
 
-    // Car start state
+
     private boolean batteryNotEmpty;
     private boolean carStarted;
 
-    // Range / distance state
+
     private int expectedRangeKm;
     private int drivenDistanceKm;
 
-    // Charging info readout (US 4.2)
+
     private int activeCustomerId;
     private int activeStationId;
     private int currentPowerKW;
     private int timeToFullMinutes;
     private String lastOutput;
 
-    // Percentage history validation
+
     private final List<Integer> percentageHistory = new ArrayList<>();
     private boolean percentagesValid;
 
-    // Completion message for 100%
+
     private String completionMessage;
 
-    // Station status management (US 4.3)
+
     private final Map<Integer, StationStatus> stationStatusMap = new HashMap<>();
     private int lastStationId;
     private boolean chargingRequestRejected;
@@ -54,7 +54,7 @@ public class StepDefinition_epic4_charging_process {
 
     @Given("the battery level is {int} percent")
     public void theBatteryLevelIsPercent(int arg0) {
-        // Wird im Given vor Start gesetzt und im Then zum Verifizieren verwendet
+
         if (!chargingProcessStarted) {
             this.initialBatteryLevel = arg0;
             this.currentBatteryLevel = arg0;
@@ -77,7 +77,7 @@ public class StepDefinition_epic4_charging_process {
     public void theCustomerStartsAChargingProcess() {
         this.chargingProcessStarted = true;
 
-        // US 4.1: wenn verbunden und unter Ziel -> bis Ziel (oder 100%) laden
+
         if (carConnectedToAvailableStation && currentBatteryLevel < targetBatteryLevel) {
             this.currentBatteryLevel = Math.min(targetBatteryLevel, 100);
         }
@@ -101,7 +101,7 @@ public class StepDefinition_epic4_charging_process {
 
     @When("the customer starts the car")
     public void theCustomerStartsTheCar() {
-        // US 4.1: >= 20% und nicht leer -> startet sofort
+
         this.carStarted = batteryNotEmpty && currentBatteryLevel >= 20;
     }
 
@@ -122,7 +122,7 @@ public class StepDefinition_epic4_charging_process {
 
     @And("the driven distance is calculated")
     public void theDrivenDistanceIsCalculated() {
-        // Fürs erste: gefahrene Distanz = erwartete Reichweite
+
         this.drivenDistanceKm = this.expectedRangeKm;
     }
 
@@ -134,7 +134,7 @@ public class StepDefinition_epic4_charging_process {
                 "Driven distance differs from expected range by more than allowed tolerance.");
     }
 
-    // ------------- HIER: DataTable korrekt binden -------------
+
 
     @Given("an active charging process exists for the customer with the userID {int} at the station with the id {int} and these values:")
     public void anActiveChargingProcessExistsForTheCustomerWithTheUserIDAtTheStationWithTheIdAndTheseValues(int customerId,
@@ -143,7 +143,7 @@ public class StepDefinition_epic4_charging_process {
         this.activeCustomerId = customerId;
         this.activeStationId = stationId;
 
-        // Tabelle: batteryPercentage | powerKW | timeToFullMinutes
+
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
@@ -175,7 +175,7 @@ public class StepDefinition_epic4_charging_process {
         this.activeStationId = stationId;
         this.percentageHistory.clear();
 
-        // Tabelle: | percentage |
+
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         for (Map<String, String> row : rows) {
             int percentage = Integer.parseInt(row.get("percentage"));
@@ -265,7 +265,7 @@ public class StepDefinition_epic4_charging_process {
                 "Station status was not updated to AVAILABLE.");
     }
 
-    // ---------- Status MAINTENANCE / OFFLINE (Scenario Outline) ----------
+
 
     @Given("a charging station exists with the id {int} and the status MAINTENANCE")
     public void aChargingStationExistsWithTheIdAndTheStatusMAINTENANCE(int arg0) {
@@ -289,7 +289,7 @@ public class StepDefinition_epic4_charging_process {
         StationStatus current = stationStatusMap.get(arg0);
         if (current == StationStatus.MAINTENANCE || current == StationStatus.OFFLINE) {
             this.chargingRequestRejected = true;
-            // Status bleibt unverändert
+
         } else {
             this.chargingRequestRejected = false;
             stationStatusMap.put(arg0, StationStatus.CHARGING);

@@ -35,13 +35,13 @@ public class Stepdefinition_epic9_manage_invoices {
 
     @Given("a charging session has ended")
     public void aChargingSessionHasEnded() {
-        // Simulate session end
+
         endTime = new Date();
     }
 
     @When("the session result is received with:")
     public void theSessionResultIsReceivedWith(DataTable dataTable) {
-        // Fields: kWh, duration, mode, station are assumed received
+
         manager.createInvoiceFromSession(kWh, duration, mode, station, startTime, endTime, pricingRule);
         currentInvoice = manager.getInvoice(0);
     }
@@ -118,7 +118,7 @@ public class Stepdefinition_epic9_manage_invoices {
 
     @When("the request is made")
     public void theRequestIsMade() {
-        // Request simulated in click
+
     }
 
     @Then("a correctly formatted PDF invoice is generated instantly")
@@ -162,12 +162,12 @@ public class Stepdefinition_epic9_manage_invoices {
 
     @When("I open the correction tool")
     public void iOpenTheCorrectionTool() {
-        // Simulate opening tool
+
     }
 
     @Then("I can adjust the following fields:")
     public void iCanAdjustTheFollowingFields(DataTable dataTable) {
-        // Simulate adjustment capability; in test, just call setters
+
         currentInvoice.setkWh(15.0);
         currentInvoice.setPricePerKWh(0.20);
         currentInvoice.setDuration(90);
@@ -191,7 +191,7 @@ public class Stepdefinition_epic9_manage_invoices {
 
     @When("the process is completed")
     public void theProcessIsCompleted() {
-        // Process complete simulated
+
     }
 
     @Then("the customer automatically receives the credit note and the corrected invoice via email")
@@ -199,7 +199,7 @@ public class Stepdefinition_epic9_manage_invoices {
         Invoice creditNote = new Invoice(); // Placeholder
         Invoice corrected = manager.getInvoice(1); // Since added
         manager.sendEmail(creditNote, corrected);
-        // Assume sent, no assert needed
+
     }
 
     @Given("the correction is processed")
@@ -221,7 +221,7 @@ public class Stepdefinition_epic9_manage_invoices {
 
     @And("a link to the new invoice version is displayed")
     public void aLinkToTheNewInvoiceVersionIsDisplayed() {
-        // Simulate link; assert history has corrected
+
         assertTrue(history.contains("Corrected"));
     }
 }
