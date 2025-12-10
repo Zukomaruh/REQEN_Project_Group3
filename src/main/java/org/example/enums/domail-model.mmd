@@ -1,230 +1,173 @@
 classDiagram
-%% =====================
-%% CORE DOMAIN ENTITIES
-%% =====================
+
+    class Main {
+        +main(args: String[])
+    }
 
     class Account {
-        +long userId
-        +String username
-        +String email
-        +String password
-        +AccountType role
-        +boolean active
+        +userId: long
+        +username: String
+        +email: String
+        +password: String
+        +role: AccountType
+        +active: boolean
     }
 
     class ChargingLocation {
-        +Long locationId
-        +String name
-        +String address
-        +List~ChargingStation~ stations
+        +locationId: Long
+        +name: String
+        +address: String
+        +stations: List~ChargingStation~
     }
 
     class ChargingStation {
-        +Long stationId
-        +Long locationId
-        +String stationName
-        +StationType type
-        +int capacityKW
-        +StationStatus status
-        +Double pricing
+        +stationId: long
+        +locationId: long
+        +stationName: String
+        +type: StationType
+        +capacity: int
+        +status: StationStatus
+        +pricing: float
     }
 
     class ChargingProcess {
-        +Long sessionId
-        +Long customerId
-        +Long stationId
-        +String stationName
-        +ChargingMode mode
-        +int batteryPercentage
-        +int targetBatteryPercentage
-        +int powerKW
-        +int timeToFullMinutes
-        +int expectedRangeKm
-        +int drivenDistanceKm
-        +SessionStatus status
-
-        +updateBatteryPercentage(int)
-        +complete()
-        +isDrivenDistanceWithinTolerance(int) boolean
+        +sessionId: Long
+        +customerId: Long
+        +stationId: Long
+        +stationName: String
+        +mode: ChargingMode
+        +batteryPercentage: int
+        +targetBatteryPercentage: int
+        +powerKW: int
+        +timeToFullMinutes: int
+        +expectedRangeKm: int
+        +drivenDistanceKm: int
+        +status: SessionStatus
     }
 
     class PricingRules {
-        +int pricingId
-        +int locationId
-        +int validFrom
-        +int validTo
-        +boolean active
-        +List~PriceComponent~ priceComponents
+        +pricingId: int
+        +locationId: int
+        +stationType: StationType
+        +validFrom: int
+        +validTo: int
+        +priceComponents: List~PriceComponent~
+        +active: boolean
     }
 
     class Invoice {
-        +String invoiceId
-        +Date startTime
-        +Date endTime
-        +double kWh
-        +int durationMinutes
-        +String mode
-        +String stationName
-        +double pricePerKWh
-        +double totalAmount
-        +InvoiceStatus status
-        +String pricingRuleId
+        +kWh: double
+        +duration: int
+        +mode: String
+        +station: String
+        +pricePerKWh: double
+        +totalCost: double
+        +appliedPricingRule: String
+        +status: String
+        +customerBalance: double
     }
 
-%% =====================
-%% MANAGER / SERVICES
-%% =====================
-
     class AccountManager {
-        -List~Account~ accounts
-        +getInstance() AccountManager
-        +addAccount(Account)
-        +readAccount(long) Account
-        +updateAccount(boolean,long)
-        +updateAccount(String,long)
+        -accounts: List~Account~
     }
 
     class ChargingLocationManager {
-        -List~ChargingLocation~ locations
-        -long idCounter
-        +getInstance() ChargingLocationManager
-        +createLocation(String,String) ChargingLocation
-        +addLocation(ChargingLocation)
-        +getAllLocations() List~ChargingLocation~
-        +clear()
+        -locations: List~ChargingLocation~
+        -idCounter: long
     }
 
     class StationManager {
-        -Map~Long,ChargingLocation~ locations
-        -Map~Long,ChargingStation~ stations
-        -long stationIdCounter
-        +getInstance() StationManager
-        +addLocation(ChargingLocation)
-        +createStation(Long,String,StationType,int,double) ChargingStation
-        +getAllStationInformation() String
-        +getStation(Long) ChargingStation
+        -locations: Map~Long,ChargingLocation~
+        -stations: Map~Long,ChargingStation~
+        -stationIdCounter: long
     }
 
     class ChargingProcessManager {
-        -Map~Long,ChargingProcess~ processes
-        -long sessionIdCounter
-        +getInstance() ChargingProcessManager
-        +startProcess(Long,Long,String,ChargingMode,int,int,int,int) ChargingProcess
-        +getProcess(Long) ChargingProcess
-        +updateBatteryPercentage(Long,int)
-        +completeProcess(Long)
-        +getAllProcesses() Map~Long,ChargingProcess~
-        +clear()
+        -processes: Map~Long,ChargingProcess~
+        -sessionIdCounter: long
     }
 
     class PricingManager {
-        -List~PricingRules~ pricingRules
-        +addPricingRule(PricingRules)
-        +getActivePricingRules() List~PricingRules~
-        +findPricingForLocation(int) PricingRules
+        -pricingRules: List~PricingRules~
     }
 
     class InvoiceManager {
-        -List~Invoice~ invoices
-        -double currentPrice
-        +setCurrentPrice(double)
-        +createInvoiceFromSession(double,int,String,String,Date,Date,String)
-        +getInvoice(int) Invoice
-        +viewDetails(Invoice) String
-        +downloadPDF(Invoice) String
-        +viewHistory() String
+        -invoices: List~Invoice~
+        -reviewQueue: List~Invoice~
+        -currentPricePerKWh: double
+        -priceAtStart: double
+        -logs: List~String~
     }
-
-%% ==========
-%% ENUMS
-%% ==========
 
     class AccountType {
         <<enum>>
-        CUSTOMER
-        OWNER
-        ADMIN
     }
 
     class StationType {
         <<enum>>
-        AC
-        DC
-        HPC
     }
 
     class StationStatus {
         <<enum>>
-        AVAILABLE
-        CHARGING
-        MAINTENANCE
-        OFFLINE
     }
 
     class ChargingMode {
         <<enum>>
-        FAST
-        STANDARD
-        ECO
     }
 
     class SessionStatus {
         <<enum>>
-        ACTIVE
-        COMPLETED
-        CANCELLED
-        INTERRUPTED
     }
 
     class PriceComponent {
         <<enum>>
-        KWH_AC
-        KWH_DC
-        MINUTE_FEE
-        SESSION_FEE
     }
 
     class InvoiceStatus {
         <<enum>>
-        OPEN
-        PAID
-        CANCELLED
     }
 
-%% =====================
-%% RELATIONSHIPS
-%% =====================
+    class DepositStatus {
+        <<enum>>
+    }
 
-%% Accounts & Processes / Invoices
-    Account "1" --> "*" ChargingProcess : "customerId"
-    Account "1" --> "*" Invoice : "billed to"
+    class PaymentMethod {
+        <<enum>>
+    }
 
-%% Locations & Stations
-    ChargingLocation "1" --> "*" ChargingStation : "stations"
+%% Beziehungen
 
-%% Stations & Processes
-    ChargingStation "1" --> "*" ChargingProcess : "used in"
+    Main ..> AccountManager
+    Main ..> ChargingLocationManager
+    Main ..> StationManager
+    Main ..> ChargingProcessManager
+    Main ..> PricingManager
+    Main ..> InvoiceManager
 
-%% Locations & Pricing
-    ChargingLocation "1" --> "0..*" PricingRules : "pricing rules for location"
-    PricingRules "1" --> "*" PriceComponent : "uses"
+    AccountManager ..> Account
+    ChargingLocationManager ..> ChargingLocation
+    StationManager ..> ChargingLocation
+    StationManager ..> ChargingStation
+    ChargingProcessManager ..> ChargingProcess
+    PricingManager ..> PricingRules
+    InvoiceManager ..> Invoice
 
-%% Processes & Invoices
-    ChargingProcess "1" --> "0..1" Invoice : "invoiced as"
+    Account "1" --> "*" ChargingProcess : customerId
+    Account "1" --> "*" Invoice : billed
 
-%% Managers & Entities
-    AccountManager ..> Account : "manages"
-    ChargingLocationManager ..> ChargingLocation : "manages"
-    StationManager ..> ChargingStation : "manages"
-    StationManager ..> ChargingLocation : "knows"
-    ChargingProcessManager ..> ChargingProcess : "manages"
-    PricingManager ..> PricingRules : "manages"
-    InvoiceManager ..> Invoice : "manages"
+    ChargingLocation "1" --> "*" ChargingStation : stations
+    ChargingStation "1" --> "*" ChargingProcess : sessions
 
-%% Enums usage
-    Account --> AccountType
+    ChargingLocation "1" --> "0..*" PricingRules : pricing
+    PricingRules "1" --> "*" PriceComponent : components
+
     ChargingStation --> StationType
     ChargingStation --> StationStatus
     ChargingProcess --> ChargingMode
     ChargingProcess --> SessionStatus
+    PricingRules --> StationType
+    PricingRules --> PriceComponent
     Invoice --> InvoiceStatus
+    Invoice --> PaymentMethod
+    Invoice --> DepositStatus
+    Account --> AccountType
