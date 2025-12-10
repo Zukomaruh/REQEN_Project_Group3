@@ -124,7 +124,7 @@ public class StepDefinition_epic3_manage_charging_station {
         for (Map<String, String> locationMap : chargingLocations) {
             locationName = locationMap.get("name");
             locationAddress = locationMap.get("address");
-            //String stations = locationMap.get("stations");
+
             location = new ChargingLocation(locationName, locationAddress);
         }
 
@@ -134,11 +134,9 @@ public class StepDefinition_epic3_manage_charging_station {
     public void theseStationsExist(DataTable table) {
         List<Map<String, String>> data = table.asMaps(String.class, String.class); // <-- Ihre Änderung
 
-        // Die Schleife muss nun über die Elemente der Liste iterieren,
-        // nicht nur hartkodiert 2 Mal laufen.
-        //AKTUELle Zeile abrufen
+
         for (Map<String, String> currentStationData : data) {
-            // Alle 'data.get(...)' Aufrufe müssen auf 'currentStationData.get(...)' geändert werden.
+
             name = currentStationData.get("stationName");
 
             if (Objects.equals(currentStationData.get("type"), "AC")) {
@@ -148,9 +146,9 @@ public class StepDefinition_epic3_manage_charging_station {
             }
             capacity = Integer.parseInt(currentStationData.get("capacity"));
 
-            // ... (Rest der Logik mit currentStationData)
+
             pricing = Float.parseFloat(currentStationData.get("pricing"));
-            // Erstellen der Stationen
+
             ChargingStation currentStation = new ChargingStation(
                     location.getLocationId(), name, type, capacity, pricing
             );
@@ -158,11 +156,10 @@ public class StepDefinition_epic3_manage_charging_station {
                currentStation.setStatus(StationStatus.CHARGING);
             }
 
-            // Hinzufügen der Stationen
+
             location.addStation(currentStation);
 
-            // Die ursprünglichen Variablen 'station' und 'station02' werden hier
-            // ersetzt, da die Liste direkt iteriert wird.
+
 
         }
     }

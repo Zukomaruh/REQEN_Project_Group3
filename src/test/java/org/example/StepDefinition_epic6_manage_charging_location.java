@@ -32,13 +32,11 @@ public class StepDefinition_epic6_manage_charging_location {
     private String tempName;
     private String tempAddress;
 
-    // ============================
-    // BACKGROUND
-    // ============================
+
 
     @Given("owner is on the system main class.")
     public void theOwnerIsOnTheSystemMainClass() {
-        // Test-Reset vor jedem Scenario
+
         locationManager.clear();
         createdLocation = null;
         retrievedLocations = null;
@@ -47,9 +45,7 @@ public class StepDefinition_epic6_manage_charging_location {
         tempAddress = null;
     }
 
-    // ============================
-    // US 6.1 – create charging location
-    // ============================
+
 
     @When("the owner creates a charging location with the name {string}")
     public void theOwnerCreatesAChargingLocationWithTheName(String name) {
@@ -64,7 +60,7 @@ public class StepDefinition_epic6_manage_charging_location {
 
     @Then("a charging Location with the name {string} with an empty Charging Station List is created successfully")
     public void aChargingLocationWithTheNameWithAnEmptyChargingStationListIsCreatedSuccessfully(String expectedName) {
-        // Wenn die Eingabe ungültig ist, darf kein Objekt existieren
+
         if (tempName == null || tempName.isBlank() || tempAddress == null || tempAddress.isBlank()) {
             assertNull(createdLocation, "Location should not be created with invalid input.");
             return;
@@ -91,9 +87,7 @@ public class StepDefinition_epic6_manage_charging_location {
     public void anErrorIsPrintedThatSays(String arg0) {
     }
 
-    // ============================
-    // US 6.2 – read charging locations
-    // ============================
+
 
     @Given("these charging locations exist:")
     public void theseChargingLocationsExist(DataTable dataTable) {
@@ -118,12 +112,12 @@ public class StepDefinition_epic6_manage_charging_location {
                         if (stationName.isEmpty()) continue;
 
                         ChargingStation station = new ChargingStation(
-                                                        // stationId – für Test nicht relevant
+
                                 loc.getLocationId(),
                                 stationName,
-                                StationType.AC,              // Dummy-Werte für den Test
+                                StationType.AC,
                                 11,
-                                0                         // Pricing – für diesen Test egal
+                                0
                         );
                         loc.addStation(station);
                     }
@@ -157,13 +151,11 @@ public class StepDefinition_epic6_manage_charging_location {
     @Then("the console shows this:")
     public void theOutputLooksLikeThis(String expectedOutput) {
         assertNotNull(lastOutput, "Output must not be null.");
-        //assertEquals(expectedOutput.trim(), lastOutput.trim());
+
         assertTrue(lastOutput.trim().contains(expectedOutput.trim()));
     }
 
-    // ============================
-    // Hilfsmethode
-    // ============================
+
 
     private String stripQuotes(String value) {
         if (value == null) return null;
