@@ -76,3 +76,25 @@ Feature: Account Management
     When the "username" is updated to "Hans Hubertus"
     And the updated value is requested
     Then the output contains the value "Hans Hubertus"
+
+  # User Story 1.4 Delete Account
+  Scenario: Delete Account with balance zero
+  As a customer
+  I want to delete my account
+  so I can delete my stored data
+    Given an Account exists with the username "Peter"
+    And the Accounts balance is zero
+    When the user wants to delete the Account with the correct password
+    Then there is no Account with the username "Peter"
+
+  Scenario:  Delete Account with balance != zero
+    Given an Account exists with the username "Johann Sebastian Bach"
+    And the Account balance is 37
+    When the user wants to delete the Account with the correct password
+    Then an error indicates that it is not allowed to delete Accounts with a balance not equal to zero
+
+  Scenario:  Delete Account with active charging process
+    Given an Account exists with the username "Linus Torwald"
+    And the Account has an active charging status
+    When the user wants to delete the Account with the correct password
+    Then an error indicates that it is not allowed to delete Accounts with an active charging status
