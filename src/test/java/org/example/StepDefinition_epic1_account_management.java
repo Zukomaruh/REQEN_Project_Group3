@@ -186,4 +186,33 @@ public class StepDefinition_epic1_account_management {
     public void theOutputContainsTheValue(String arg0) {
         assertTrue(testOutput.contains(arg0));
     }
+
+    @And("the Accounts balance is zero")
+    public void theAccountsBalanceIsZero() {
+
+    }
+
+    @When("the user wants to delete the Account with the correct password")
+    public void theUserWantsToDeleteTheAccountWithTheCorrectPassword() {
+    }
+
+    @Then("there is no Account with the username {string}")
+    public void thereIsNoAccountWithTheUsername(String arg0) {
+    }
+
+    @And("the Account balance is {int}")
+    public void theAccountBalanceIs(int arg0) {
+    }
+
+    @Then("an error indicates that it is not allowed to delete Accounts with a balance not equal to zero")
+    public void anErrorIndicatesThatItIsNotAllowedToDeleteAccountsWithABalanceNotEqualToZero() {
+    }
+
+    @And("the Account has an active charging status")
+    public void theAccountHasAnActiveChargingStatus() {
+    }
+
+    @Then("an error indicates that it is not allowed to delete Accounts with an active charging status")
+    public void anErrorIndicatesThatItIsNotAllowedToDeleteAccountsWithAnActiveChargingStatus() {
+    }
 }
