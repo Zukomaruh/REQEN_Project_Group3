@@ -1,9 +1,11 @@
 package org.example;
 
 import org.example.enums.AccountType;
+import org.example.enums.PaymentMethod;
 import org.example.enums.SessionStatus;
 import org.example.managementClasses.AccountManager;
 
+import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
 public class Account {
@@ -13,6 +15,9 @@ public class Account {
     private String password;
     private AccountType role; // OWNER, CUSTOMER
     private boolean active;
+    private PrepaidBalance prepaidBalance;
+    private BigDecimal prepaidAmount;
+
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
         if (username == null || username.trim().isEmpty() ||
@@ -71,6 +76,10 @@ public class Account {
         this.active = !active;
     }
 
+    public void setPrepaidBalance(PrepaidBalance prepaidBalance) {this.prepaidBalance = prepaidBalance;}
+
+    public void setPrepaidAmount(BigDecimal prepaidAmount) {this.prepaidAmount = prepaidAmount;}
+
     public long getUserId() {
         return userId;
     }
@@ -94,6 +103,10 @@ public class Account {
     public boolean getActive() {
         return active;
     }
+
+    public PrepaidBalance getPrepaidBalance() {return prepaidBalance;}
+
+    public BigDecimal getPrepaidAmount() {return prepaidAmount;}
 
     @Override
     public String toString() {

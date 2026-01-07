@@ -22,9 +22,20 @@ public class AccountManager {
         }
     }
 
+    /* unnötig, da Account schon Accounts erstellt und added
     public void createAccount(String username, String email, String password, AccountType type){
         Account account = new Account(username, email, password, type);
         addAccount(account);
+    }*/
+
+    public Account login(String username, String password){
+        for (Account account : accounts){
+            if (account.getUsername().equals(username)
+                    && account.getPassword().equals(password)
+                        && account.getActive())
+            {return account;}
+        }
+        return null;
     }
 
     public Account readAccount(long userID) {
