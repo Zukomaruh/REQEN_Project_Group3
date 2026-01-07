@@ -32,6 +32,7 @@ Feature: Account Management
       | Field      | Value                    |
       | username   | Fiona Fantasie           |
       | email      | fiona.fantasie@email.com |
+      | password   | 1234567890123            |
       | role       | CUSTOMER                 |
       | status     | active                   |
     When the Account information is requested
@@ -86,6 +87,7 @@ Feature: Account Management
       | Field      | Value                    |
       | username   | Johann Sebastian         |
       | email      | johann.esbi@email.com    |
+      | password   | 1234567890123            |
       | role       | CUSTOMER                 |
       | status     | active                   |
     And the Accounts balance is zero
@@ -97,9 +99,10 @@ Feature: Account Management
       | Field      | Value                    |
       | username   | Peter Ochse              |
       | email      | p.o@email.com            |
+      | password   | 1234567890123            |
       | role       | CUSTOMER                 |
       | status     | active                   |
-    And the Account balance is 37
+    And the Account balance is 37.4
     When the user wants to delete the Account with the correct password
     Then an error indicates that it is not allowed to delete Accounts with a balance not equal to zero
 
@@ -108,6 +111,7 @@ Feature: Account Management
       | Field      | Value                    |
       | username   | Susi Sonnenschein        |
       | email      | susi.sonne@email.com     |
+      | password   | 1234567890123            |
       | role       | CUSTOMER                 |
       | status     | active                   |
     And the Account has an active charging status

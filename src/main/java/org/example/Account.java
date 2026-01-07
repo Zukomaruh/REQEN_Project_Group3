@@ -1,9 +1,11 @@
 package org.example;
 
 import org.example.enums.AccountType;
-import org.example.enums.SessionStatus;
+import org.example.enums.ChargingMode;
 import org.example.managementClasses.AccountManager;
+import org.example.managementClasses.ChargingProcessManager;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Account {
@@ -13,6 +15,7 @@ public class Account {
     private String password;
     private AccountType role; // OWNER, CUSTOMER
     private boolean active;
+    private float balance = 0f;
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
         if (username == null || username.trim().isEmpty() ||
@@ -106,5 +109,21 @@ public class Account {
 
     public void setType(AccountType role) {
         this.role = role;
+    }
+
+    public void updateBalance(float amount) {
+        if(amount > 0){
+            this.balance += amount;
+        } else if (role == AccountType.OWNER) {
+            this.balance += amount;
+        }
+    }
+
+    public float getBalance() {
+        return balance;
+    }
+
+    public void startChargingProcess(long locationID, String stationName,  long stationID, ChargingMode mode, int startingPercentage, int targetPercentage) {
+        //ChargingProcessManager.getInstance().startProcess(userId, stationID, stationName, mode, startingPercentage, targetPercentage, );
     }
 }

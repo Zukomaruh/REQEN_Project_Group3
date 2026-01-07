@@ -76,4 +76,22 @@ public class ChargingLocationManager {
         locations.clear();
         idCounter = 1L;
     }
+
+    public ChargingLocation getLocation(String name) {
+        for (ChargingLocation location : locations) {
+            if (location.getName().equals(name)) {
+                return location;
+            }
+        }
+        return null;
+    }
+
+    public ChargingLocation getLocation(long locationId) {
+        for (ChargingLocation location : locations){
+            if(location.getLocationId().equals(locationId)){
+                return location;
+            }
+        }
+        return null;
+    }
 }
