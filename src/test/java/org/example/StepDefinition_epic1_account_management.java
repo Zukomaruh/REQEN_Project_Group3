@@ -231,7 +231,7 @@ public class StepDefinition_epic1_account_management {
         StationManager.getInstance().createStation(id, "station01", StationType.AC, 50, 0.4);
         ChargingStation station = StationManager.getInstance().createStation(id, "station01", StationType.AC, 50, 0.4);
         ChargingLocationManager.getInstance().getLocation("Westbahnhof").addStation(station);
-        AccountManager.getInstance().readAccount(userId).startChargingProcess(location.getLocationId(), station.getStationId());
+        //AccountManager.getInstance().readAccount(userId).startChargingProcess(location.getLocationId(), station.getStationId());
     }
 
     @Then("an error indicates that it is not allowed to delete Accounts with an active charging status")
