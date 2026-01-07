@@ -6,7 +6,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.example.enums.AccountType;
+import org.example.enums.StationType;
 import org.example.managementClasses.AccountManager;
+import org.example.managementClasses.ChargingLocationManager;
+import org.example.managementClasses.StationManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -223,7 +226,12 @@ public class StepDefinition_epic1_account_management {
 
     @And("the Account has an active charging status")
     public void theAccountHasAnActiveChargingStatus() {
-        fail();
+        ChargingLocation location = ChargingLocationManager.getInstance().createLocation("Westbahnhof", "Kaisergassde13, 1150, Wien");
+        long id = ChargingLocationManager.getInstance().getLocation("Westbahnhof").getLocationId();
+        StationManager.getInstance().createStation(id, "station01", StationType.AC, 50, 0.4);
+        ChargingStation station = StationManager.getInstance().createStation(id, "station01", StationType.AC, 50, 0.4);
+        ChargingLocationManager.getInstance().getLocation("Westbahnhof").addStation(station);
+        AccountManager.getInstance().readAccount(userId).startChargingProcess(location.getLocationId(), station.getStationId());
     }
 
     @Then("an error indicates that it is not allowed to delete Accounts with an active charging status")

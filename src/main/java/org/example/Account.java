@@ -1,7 +1,9 @@
 package org.example;
 
 import org.example.enums.AccountType;
+import org.example.enums.ChargingMode;
 import org.example.managementClasses.AccountManager;
+import org.example.managementClasses.ChargingProcessManager;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -119,5 +121,9 @@ public class Account {
 
     public float getBalance() {
         return balance;
+    }
+
+    public void startChargingProcess(long locationID, String stationName,  long stationID, ChargingMode mode, int startingPercentage, int targetPercentage) {
+        //ChargingProcessManager.getInstance().startProcess(userId, stationID, stationName, mode, startingPercentage, targetPercentage, );
     }
 }
