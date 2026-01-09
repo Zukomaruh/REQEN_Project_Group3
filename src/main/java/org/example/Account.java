@@ -1,11 +1,10 @@
 package org.example;
 
 import org.example.enums.AccountType;
-import org.example.enums.PaymentMethod;
-import org.example.enums.SessionStatus;
 import org.example.managementClasses.AccountManager;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class Account {
@@ -15,8 +14,12 @@ public class Account {
     private String password;
     private AccountType role; // OWNER, CUSTOMER
     private boolean active;
-    private PrepaidBalance prepaidBalance;
-    private BigDecimal prepaidAmount;
+    private float prepaidAmount = 0;
+    private String paymentMethod;
+    private float prepaidBalance = 0;
+    private ArrayList <String> paymentMethods = new ArrayList<String>
+            (Arrays.asList("credit card", "debit card", "paypal", "bank transfer", "apple pay", "google pay"));
+
 
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
@@ -76,13 +79,37 @@ public class Account {
         this.active = !active;
     }
 
-    public void setPrepaidBalance(PrepaidBalance prepaidBalance) {this.prepaidBalance = prepaidBalance;}
+    public void setUserId(long userId) {this.userId = userId;}
 
-    public void setPrepaidAmount(BigDecimal prepaidAmount) {this.prepaidAmount = prepaidAmount;}
-
-    public long getUserId() {
-        return userId;
+    public boolean setPrepaidAmount(String prepaidAmount) {
+        if (prepaidAmount.isEmpty()) {System.out.println("Amount must not be empty"); return false;}
+        if (!prepaidAmount.matches("^\\d+(.\\d+)?$")) {System.out.println("Amount must contain only numbers"); return false;}
+        float amount = Float.parseFloat(prepaidAmount);
+        if (amount < 20) {System.out.println("Amount must be at least 20"); return false;}
+        if (amount > 500) {System.out.println("Amount must not exceed 500"); return false;}
+        this.prepaidAmount = amount;
+        return true;
     }
+
+    public boolean setPaymentMethod(String paymentMethod) {
+        if (paymentMethod.isEmpty()) {System.out.println("Payment Method must not be empty"); return false;}
+        if (paymentMethod.matches(".*\\d.*") || !paymentMethod.matches("[a-zA-Z ]+")) {System.out.println("Payment Method must contain only letters"); return false;}
+        if (!paymentMethods.contains(paymentMethod)) {System.out.println("Select valid payment method"); return false;}
+        this.paymentMethod = paymentMethod;
+        return true;
+    }
+
+    public void setPrepaidBalance(float prepaidBalance) {
+        this.prepaidBalance = prepaidBalance;
+    }
+
+    public float getPrepaidBalance() {
+        return prepaidBalance;
+    }
+
+    public String getPaymentMethod() {return paymentMethod;}
+
+    public long getUserId() {return userId;}
 
     public String getUsername() {
         return username;
@@ -104,9 +131,7 @@ public class Account {
         return active;
     }
 
-    public PrepaidBalance getPrepaidBalance() {return prepaidBalance;}
-
-    public BigDecimal getPrepaidAmount() {return prepaidAmount;}
+    public float getPrepaidAmount() {return prepaidAmount;}
 
     @Override
     public String toString() {
@@ -120,4 +145,18 @@ public class Account {
     public void setType(AccountType role) {
         this.role = role;
     }
+
+    public void getPaymentConfirmationMessage() {
+        System.out.println("Selected amount: "+this.prepaidAmount+ "%nSelected payment method: "+this.paymentMethod);
+    }
+
+    public boolean canStartCharging(ChargingStation chargingStation) {
+        float pricing = chargingStation.getPricing();
+        if (this.getPrepaidBalance() < pricing) {
+            System.out.println("Charging terminated: Insufficient balance");
+            return false;
+        }
+        return true;
+    }
+
 }
