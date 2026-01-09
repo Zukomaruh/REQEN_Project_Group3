@@ -37,8 +37,7 @@ public class ChargingProcessManager {
         if (customerId == null || stationId == null
                 || stationName == null || stationName.isBlank()
                 || mode == null
-                || initialBatteryPercentage < 0 || initialBatteryPercentage > 100
-                || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
+                || initialBatteryPercentage < 0 || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
                 || initialBatteryPercentage > targetBatteryPercentage
                 || powerKW <= 0
         ) {

@@ -32,6 +32,7 @@ Feature: Account Management
       | Field      | Value                    |
       | username   | Fiona Fantasie           |
       | email      | fiona.fantasie@email.com |
+      | password   | 1234567890123            |
       | role       | CUSTOMER                 |
       | status     | active                   |
     When the Account information is requested
@@ -76,3 +77,43 @@ Feature: Account Management
     When the "username" is updated to "Hans Hubertus"
     And the updated value is requested
     Then the output contains the value "Hans Hubertus"
+
+  # User Story 1.4 Delete Account
+  Scenario: Delete Account with balance zero
+  As a customer
+  I want to delete my account
+  so I can delete my stored data
+    Given An Account exists with the following user credentials:
+      | Field      | Value                    |
+      | username   | Johann Sebastian         |
+      | email      | johann.esbi@email.com    |
+      | password   | 1234567890123            |
+      | role       | CUSTOMER                 |
+      | status     | active                   |
+    And the Accounts balance is zero
+    When the user wants to delete the Account with the correct password
+    Then there is no Account with the username "Johann Sebastian"
+
+  Scenario:  Delete Account with balance != zero
+    Given An Account exists with the following user credentials:
+      | Field      | Value                    |
+      | username   | Peter Ochse              |
+      | email      | p.o@email.com            |
+      | password   | 1234567890123            |
+      | role       | CUSTOMER                 |
+      | status     | active                   |
+    And the Account balance is 37.4
+    When the user wants to delete the Account with the correct password
+    Then an error indicates that it is not allowed to delete Accounts with a balance not equal to zero
+
+  Scenario:  Delete Account with active charging process
+    Given An Account exists with the following user credentials:
+      | Field      | Value                    |
+      | username   | Susi Sonnenschein        |
+      | email      | susi.sonne@email.com     |
+      | password   | 1234567890123            |
+      | role       | CUSTOMER                 |
+      | status     | active                   |
+    And the Account has an active charging status
+    When the user wants to delete the Account with the correct password
+    Then an error indicates that it is not allowed to delete Accounts with an active charging status

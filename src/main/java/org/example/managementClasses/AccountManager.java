@@ -87,4 +87,19 @@ public class AccountManager {
             }
         }
     }
+
+    public void deleteAccount(long userId, String password) {
+        if(readAccount(userId) != null){
+            Account tempAccount = readAccount(userId);
+            if(tempAccount.getPassword().equals(password)){
+                if(tempAccount.getBalance() == 0){
+                    accounts.remove(readAccount(userId));
+                }else{
+                    throw new IllegalArgumentException("You cannot delete an Account with a balance not zero!");
+                }
+            }else{
+                System.out.println("Wrong password!");
+            }
+        }
+    }
 }
