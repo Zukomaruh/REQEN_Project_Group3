@@ -9,9 +9,7 @@ import java.util.List;
 public class AccountManager {
     private static final AccountManager INSTANCE = new AccountManager();
     public static AccountManager getInstance(){return INSTANCE;}
-
     private final List<Account> accounts;
-
     public AccountManager() {
         this.accounts = new ArrayList<>();
     }
@@ -22,10 +20,33 @@ public class AccountManager {
         }
     }
 
+    public void updatePrepaidBalance(Account account){
+        float amount = account.getPrepaidAmount();
+        if (account.getPrepaidBalance() == 0){
+            account.setPrepaidBalance(amount);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!", amount);
+        } else {
+            float prepaidBalance = Math.round(account.getPrepaidBalance() + amount);
+            account.setPrepaidBalance(prepaidBalance);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!", prepaidBalance);
+        }
+    }
+
+
     public void createAccount(String username, String email, String password, AccountType type){
         Account account = new Account(username, email, password, type);
         addAccount(account);
     }
+
+    /*public Account login(String username, String password){
+        for (Account account : accounts){
+            if (account.getUsername().equals(username)
+                    && account.getPassword().equals(password)
+                        && account.getActive())
+            {return account;}
+        }
+        return null;
+    }*/
 
     public Account readAccount(long userID) {
         for (Account account : accounts) {
