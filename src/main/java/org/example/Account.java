@@ -4,7 +4,10 @@ import org.example.enums.AccountType;
 import org.example.enums.ChargingMode;
 import org.example.managementClasses.AccountManager;
 import org.example.managementClasses.ChargingProcessManager;
+import org.example.managementClasses.StationManager;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -25,6 +28,8 @@ public class Account {
 
 
     private float balance = 0f;
+    private boolean charginProcess = false;
+    private LocalDateTime chargingProcessTime;
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
         if (username == null || username.trim().isEmpty() ||
@@ -175,7 +180,21 @@ public class Account {
         return balance;
     }
 
-    public void startChargingProcess(long locationID, String stationName,  long stationID, ChargingMode mode, int startingPercentage, int targetPercentage) {
-        //ChargingProcessManager.getInstance().startProcess(userId, stationID, stationName, mode, startingPercentage, targetPercentage, );
+    public void startChargingProcess(long stationId, String stationName, ChargingMode mode,int currentBattery, int targetBattery, int powerKW, int timeToFullMinutes) {
+        ChargingProcessManager.getInstance().startProcess(userId, stationId, stationName, mode, currentBattery, targetBattery, powerKW, timeToFullMinutes);
+    }
+
+    public void setChargingProcess(int timeToFinish) {
+        if(!charginProcess){
+            charginProcess = true;
+            this.chargingProcessTime = LocalDateTime.now().plusMinutes(timeToFinish);
+        }
+    }
+
+    public boolean readChargingProcess(){
+        if(charginProcess && chargingProcessTime.isAfter(LocalDateTime.now())){
+            this.charginProcess = false;
+        }
+        return charginProcess;
     }
 }
