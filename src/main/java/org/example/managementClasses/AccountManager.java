@@ -92,8 +92,8 @@ public class AccountManager {
         if(readAccount(userId) != null){
             Account tempAccount = readAccount(userId);
             if(tempAccount.getPassword().equals(password)){
-                if(tempAccount.getBalance() == 0){
-                    if(tempAccount.readChargingProcess()){
+                if(tempAccount.getPrepaidBalance() == 0){
+                    if(!tempAccount.readChargingProcess()){
                         accounts.remove(readAccount(userId));
                     }else {
                         throw new IllegalArgumentException("You cannot delete an Account with an active charging process!");
