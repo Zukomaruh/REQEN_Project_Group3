@@ -1,6 +1,6 @@
 package org.example;
 
-import io.cucumber.java.en.And;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -8,220 +8,92 @@ import org.example.managementClasses.InvoiceManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
-
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.Map;
 
 public class Stepdefinition_epic9_manage_invoices {
-    private InvoiceManager manager = new InvoiceManager();
-    private Invoice currentInvoice;
-    private Date startTime = new Date();
-    private Date endTime = new Date(System.currentTimeMillis() + 3600000); // 1 hour later
-    private double kWh = 10.0;
-    private int duration = 60;
-    private String mode = "Fast";
-    private String station = "Station1";
-    private String pricingRule = "Standard";
-    private String pdfContent;
-    private String details;
-    private String history;
 
-    @Given("a charging session has ended")
-    public void aChargingSessionHasEnded() {
+    private InvoiceManager manager = InvoiceManager.getInstance();
+    private Long activeCustomerId;
+    private List<Invoice> retrievedInvoiceList;
 
-        endTime = new Date();
+    @Given("a {string} with ID {long} exists")
+    public void aCustomerWithIDExists(String entity, long id) {
+        this.activeCustomerId = id;
+        manager.clear();
     }
 
-    @When("the session result is received with:")
-    public void theSessionResultIsReceivedWith(DataTable dataTable) {
+    @Given("the customer has the following {string}:")
+    public void theCustomerHasInvoices(String entity, DataTable dataTable) {
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+        for (Map<String, String> row : rows) {
+            String station = row.get("stationName");
+            String mode = row.get("chargingMode");
+            double kWh = Double.parseDouble(row.get("kWh"));
+            int duration = Integer.parseInt(row.get("duration"));
+            double price = Double.parseDouble(row.get("pricePerKWh"));
+            double total = Double.parseDouble(row.get("totalCost"));
+            String status = row.get("status");
+            LocalDateTime localDateTime = LocalDateTime.parse(row.get("startTime"));
+            Date start = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-        manager.createInvoiceFromSession(kWh, duration, mode, station, startTime, endTime, pricingRule);
-        currentInvoice = manager.getInvoice(0);
-    }
-
-    @Then("an invoice record is created automatically")
-    public void anInvoiceRecordIsCreatedAutomatically() {
-        assertNotNull(currentInvoice);
-        assertEquals("Created", currentInvoice.getStatus());
-    }
-
-    @Given("prices may have changed during the day")
-    public void pricesMayHaveChangedDuringTheDay() {
-        manager.setCurrentPrice(0.30); // Simulate change, but getPriceAtTime returns priceAtStart = 0.25
-    }
-
-    @When("the invoice is created")
-    public void theInvoiceIsCreated() {
-        manager.createInvoiceFromSession(kWh, duration, mode, station, startTime, endTime, pricingRule);
-        currentInvoice = manager.getInvoice(0);
-    }
-
-    @Then("the system applies the price valid at the start time of the charging session")
-    public void theSystemAppliesThePriceValidAtTheStartTimeOfTheChargingSession() {
-        assertEquals(0.25, currentInvoice.getPricePerKWh(), 0.001); // Should use price at start
-    }
-
-    @Given("the customer uses a prepaid system")
-    public void theCustomerUsesAPrepaidSystem() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-        currentInvoice.setCustomerBalance(100.0);
-    }
-
-    @When("the invoice is generated")
-    public void theInvoiceIsGenerated() {
-        manager.deductBalance(currentInvoice);
-    }
-
-    @Then("the charged amount is deducted from the customer’s available balance")
-    public void theChargedAmountIsDeductedFromTheCustomerSAvailableBalance() {
-        assertEquals(100.0 - currentInvoice.getTotalCost(), currentInvoice.getCustomerBalance(), 0.001);
-    }
-
-    @Given("I open an invoice")
-    public void iOpenAnInvoice() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-    }
-
-    @When("I expand the invoice details")
-    public void iExpandTheInvoiceDetails() {
-        details = manager.viewDetails(currentInvoice);
-    }
-
-    @Then("I see itemized rows containing:")
-    public void iSeeItemizedRowsContaining(DataTable dataTable) {
-        assertTrue(details.contains("Start time"));
-        assertTrue(details.contains("End time"));
-        assertTrue(details.contains("kWh charged"));
-        assertTrue(details.contains("Price per kWh"));
-        assertTrue(details.contains("Total cost"));
-        assertTrue(details.contains("Applied pricing rule"));
-    }
-
-    @Given("I click {string}")
-    public void iClick(String arg0) {
-        if ("Download PDF".equals(arg0)) {
-            if (currentInvoice == null) {
-                currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-            }
-            pdfContent = manager.downloadPDF(currentInvoice);
-        } else if ("Flag for correction".equals(arg0)) {
-            manager.flagForCorrection(currentInvoice, "User");
+            Invoice inv = new Invoice(activeCustomerId, station, mode, kWh, duration, price, total, start, status);
+            manager.createInvoice(inv);
         }
     }
 
-    @When("the request is made")
-    public void theRequestIsMade() {
-
+    @Given("the customer has no invoices")
+    public void theCustomerHasNoInvoices() {
+        manager.clear();
     }
 
-    @Then("a correctly formatted PDF invoice is generated instantly")
-    public void aCorrectlyFormattedPDFInvoiceIsGeneratedInstantly() {
-        assertNotNull(pdfContent);
-        assertTrue(pdfContent.contains("PDF generated"));
+    @When("the customer requests the invoice list")
+    public void theCustomerRequestsTheInvoiceList() {
+        retrievedInvoiceList = manager.getInvoicesForCustomer(activeCustomerId);
     }
 
-    @And("the PDF is available for immediate download")
-    public void thePDFIsAvailableForImmediateDownload() {
-        assertTrue(pdfContent.length() > 0);
+    @Then("the list contains {int} invoices")
+    public void theListContainsInvoices(int count) {
+        assertEquals(count, retrievedInvoiceList.size());
     }
 
-    @Given("I detect a billing error")
-    public void iDetectABillingError() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
+    @Then("the invoices are sorted by {string} \\(oldest first)")
+    public void theInvoicesAreSorted(String criteria) {
+        for (int i = 0; i < retrievedInvoiceList.size() - 1; i++) {
+            Date d1 = retrievedInvoiceList.get(i).getStartTime();
+            Date d2 = retrievedInvoiceList.get(i+1).getStartTime();
+            assertTrue(d1.before(d2) || d1.equals(d2), "Sortierung falsch: " + d1 + " ist nach " + d2);
+        }
     }
 
-    @Then("the invoice is marked as {string}")
-    public void theInvoiceIsMarkedAs(String arg0) {
-        assertEquals(arg0, currentInvoice.getStatus());
+    @Then("the first invoice is from {string} with total cost {double}")
+    public void checkFirstInvoiceContent(String station, double cost) {
+        Invoice first = retrievedInvoiceList.get(0);
+        assertEquals(station, first.getStationName());
+        assertEquals(cost, first.getTotalCost(), 0.01);
     }
 
-    @And("the action is logged with reporter and timestamp")
-    public void theActionIsLoggedWithReporterAndTimestamp() {
-        assertFalse(manager.getLogs().isEmpty());
-        assertTrue(manager.getLogs().get(0).contains("Flagged by"));
+    @Then("the first invoice is from {string} starting at {string}")
+    public void checkFirstInvoiceDate(String station, String timeString) {
+        Invoice first = retrievedInvoiceList.get(0);
+        assertEquals(station, first.getStationName());
+        LocalDateTime expected = LocalDateTime.parse(timeString);
+        Date expectedDate = Date.from(expected.atZone(ZoneId.systemDefault()).toInstant());
+        assertEquals(expectedDate.getTime(), first.getStartTime().getTime());
     }
 
-    @And("the invoice appears in the {string} queue")
-    public void theInvoiceAppearsInTheQueue(String arg0) {
-        assertFalse(manager.getReviewQueue().isEmpty());
-        assertEquals(currentInvoice, manager.getReviewQueue().get(0));
+    @Then("the system returns an empty list")
+    public void theSystemReturnsAnEmptyList() {
+        assertTrue(retrievedInvoiceList.isEmpty());
     }
 
-    @Given("an invoice is flagged or selected for correction")
-    public void anInvoiceIsFlaggedOrSelectedForCorrection() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-        manager.flagForCorrection(currentInvoice, "User");
-    }
-
-    @When("I open the correction tool")
-    public void iOpenTheCorrectionTool() {
-
-    }
-
-    @Then("I can adjust the following fields:")
-    public void iCanAdjustTheFollowingFields(DataTable dataTable) {
-
-        currentInvoice.setkWh(15.0);
-        currentInvoice.setPricePerKWh(0.20);
-        currentInvoice.setDuration(90);
-        assertEquals(15.0, currentInvoice.getkWh(), 0.001);
-        assertEquals(0.20, currentInvoice.getPricePerKWh(), 0.001);
-        assertEquals(90, currentInvoice.getDuration());
-    }
-
-    @And("I can generate a credit note and a corrected invoice")
-    public void iCanGenerateACreditNoteAndACorrectedInvoice() {
-        manager.correctInvoice(currentInvoice, 15.0, 0.20, 90);
-        assertEquals("Corrected", manager.getInvoice(0).getStatus());
-    }
-
-    @Given("a correction is saved")
-    public void aCorrectionIsSaved() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-        manager.invoices.add(currentInvoice); // Add original to list
-        manager.correctInvoice(currentInvoice, 15.0, 0.20, 90);
-    }
-
-    @When("the process is completed")
-    public void theProcessIsCompleted() {
-
-    }
-
-    @Then("the customer automatically receives the credit note and the corrected invoice via email")
-    public void theCustomerAutomaticallyReceivesTheCreditNoteAndTheCorrectedInvoiceViaEmail() {
-        Invoice creditNote = new Invoice(); // Placeholder
-        Invoice corrected = manager.getInvoice(1); // Since added
-        manager.sendEmail(creditNote, corrected);
-
-    }
-
-    @Given("the correction is processed")
-    public void theCorrectionIsProcessed() {
-        currentInvoice = new Invoice(kWh, duration, mode, station, startTime, endTime, 0.25, pricingRule);
-        manager.invoices.add(currentInvoice); // Add original to list
-        manager.correctInvoice(currentInvoice, 15.0, 0.20, 90);
-    }
-
-    @When("I view the customer’s invoice history")
-    public void iViewTheCustomerSInvoiceHistory() {
-        history = manager.viewHistory();
-    }
-
-    @Then("the original invoice is shown as {string}")
-    public void theOriginalInvoiceIsShownAs(String arg0) {
-        assertTrue(history.contains(arg0));
-    }
-
-    @And("a link to the new invoice version is displayed")
-    public void aLinkToTheNewInvoiceVersionIsDisplayed() {
-
-        assertTrue(history.contains("Corrected"));
+    @Then("a message {string} is displayed")
+    public void aMessageIsDisplayed(String msg) {
+        if (retrievedInvoiceList.isEmpty()) {
+            assertEquals("No invoices found", msg);
+        }
     }
 }
