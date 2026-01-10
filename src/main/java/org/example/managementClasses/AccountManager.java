@@ -24,11 +24,11 @@ public class AccountManager {
         float amount = account.getPrepaidAmount();
         if (account.getPrepaidBalance() == 0){
             account.setPrepaidBalance(amount);
-            System.out.printf("Prepaid Balance successfully updated to %.2f!", amount);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!\n", amount);
         } else {
             float prepaidBalance = Math.round(account.getPrepaidBalance() + amount);
             account.setPrepaidBalance(prepaidBalance);
-            System.out.printf("Prepaid Balance successfully updated to %.2f!", prepaidBalance);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!\n", prepaidBalance);
         }
     }
 
@@ -56,6 +56,10 @@ public class AccountManager {
         }
         System.out.println("No Account with this ID exists");
         return null;
+    }
+
+    public void readPrepaidBalance(Account account){
+        System.out.println("The current balance is: "+account.getPrepaidBalance());
     }
 
     public List<Account> readAccounts(){
