@@ -11,220 +11,81 @@ import org.example.managementClasses.InvoiceManager;
 import org.example.managementClasses.PricingManager;
 import org.example.managementClasses.StationManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Main {
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
 
     public static void main(String[] args) {
-        System.out.println("Welcome to EloNet");
-        System.out.println();
+        //variables
+        ChargingLocation chargingLocation = new ChargingLocation("Meidling123", "Meidling 123");
+        long locationId = chargingLocation.getLocationId();
+        ChargingStation chargingStation = new ChargingStation(locationId, "Station A", StationType.AC, 50, 0.3f);
+        System.out.println("\n=============================================================");
 
-        // =========================================================
-        // EPIC 1 – Account Management
-        // User Story 1.1 – Create Account
-        // User Story 1.2 – Read Account
-        // User Story 1.3 – Update Account
-        // =========================================================
-        System.out.println("User Story 1.1 – Create Account");
+        System.out.println(ANSI_YELLOW + "\n================ EPIC 1 – Account Management ================" + ANSI_RESET);
+        //1.1
         AccountManager accountManager = AccountManager.getInstance();
+        System.out.println(ANSI_GREEN + "\nI am Max. I am new to E.Power and want to register as a new User.\nBut I enter invalid user credentials." + ANSI_RESET);
+        Account nonvalidAccount = new Account("123", "foo", "lessthan12", AccountType.CUSTOMER);
+        System.out.println(ANSI_GREEN + "\nI correct it and get my registration confirmed." + ANSI_RESET);
+        Account account = new Account("Max Mustermann", "max.mustermann@gmail.com", "123456789012", AccountType.CUSTOMER);
+        accountManager.addAccount(account);
 
-        Account validAccount = new Account(
-                "Max Mustermann",
-                "max.mustermann@gmail.com",
-                "123456789012",
-                AccountType.CUSTOMER
-        );
-        accountManager.addAccount(validAccount);
-        long userId = validAccount.getUserId(); // unique account ID
-        System.out.println("Created Account:");
-        System.out.println(validAccount);
-        System.out.println();
-
-        System.out.println("User Story 1.2 – Read Account");
+        //1.2
+        System.out.println(ANSI_GREEN + "\nNow, I want to check on my account information." + ANSI_RESET);
+        long userId = account.getUserId();
         Account readAccount = accountManager.readAccount(userId);
-        System.out.println("Read Account:");
         System.out.println(readAccount);
-        System.out.println();
+        System.out.println(ANSI_GREEN + "\nThere I see: I put in the wrong email address! So I change it." + ANSI_RESET);
+        account.setEmail("max.new@gmail.com");
+        System.out.println(readAccount);
 
-        System.out.println("User Story 1.3 – Update Account");
-        // deactivate account
-        accountManager.updateAccount(false, userId);
-        // change username
-        accountManager.updateAccount("Maxime Musterfrau", userId);
+        //1.3
+        System.out.println(ANSI_GREEN + "\nSome time later, my wife wants to take over my account, so we just change the username." + ANSI_RESET);
+        accountManager.updateAccount("Max' wife", userId);
         Account updatedAccount = accountManager.readAccount(userId);
-        System.out.println("Updated Account:");
         System.out.println(updatedAccount);
-        System.out.println();
 
-        // =========================================================
-        // EPIC 6 – Station Network Management (Charging Locations)
-        // User Story 6.1 – Create Charging Location
-        // User Story 6.2 – Read Charging Locations
-        // User Story 6.3 – Update Charging Location
-        // =========================================================
-        ChargingLocationManager locationManager = ChargingLocationManager.getInstance();
+        //1.4
+        System.out.println(ANSI_GREEN + "\nShe suddenly gets anxious about AI having all our data and decides to delete our account …" + ANSI_RESET);
+        //accountManager.deleteAccount(readAccount.getUserId(), readAccount.getPassword());
+        System.out.println(ANSI_GREEN + "\n… but she forgot that we still had an active charging process!" + ANSI_RESET);
+        userId = updatedAccount.getUserId();
+        String password = updatedAccount.getPassword();
+        accountManager.readAccount(userId).setChargingProcess(0);
+        accountManager.deleteAccount(userId, password);
 
-        System.out.println("User Story 6.1 – Create Charging Location");
-        ChargingLocation validLocation = locationManager.createLocation(
-                "Westbahnhof",
-                "Mariahilferstraße 187, 1150 Wien"
-        );
-        System.out.println("Created Charging Location:");
-        System.out.println(validLocation);
-        System.out.println();
+        System.out.println(ANSI_YELLOW + "\n================ EPIC 2 – Prepaid Balance Management ================" + ANSI_RESET);
+        //2.1
+        System.out.println(ANSI_GREEN + "\nI want to start charging and select the payment method \"cash\" and the amount \"600\".\nBut they are invalid." + ANSI_RESET);
+        account.setPaymentMethod("cash");
+        account.setPrepaidAmount("600");
+        System.out.println(ANSI_GREEN + "\nI correct it and get my selection confirmed." + ANSI_RESET);
+        account.setPaymentMethod("paypal");
+        account.setPrepaidAmount("500");
+        account.getPaymentConfirmationMessage();
+        accountManager.updatePrepaidBalance(account);
 
-        System.out.println("User Story 6.2 – Read Charging Locations");
-        for (ChargingLocation loc : locationManager.getAllLocations()) {
-            System.out.println(loc);
-        }
-        System.out.println();
-
-        System.out.println("User Story 6.3 – Update Charging Location");
-        if (validLocation != null) {
-            validLocation.setName("Hauptzentrale");
-            System.out.println("Updated Charging Location:");
-            System.out.println(validLocation);
-        }
-        System.out.println();
-
-        // =========================================================
-        // EPIC 3 – Charging Station Management
-        // User Story 3.1 / 7.1 – Create Charging Station
-        // User Story 3.2 / 7.2 – Read Charging Station
-        // User Story 3.3 / 7.3 – Update Charging Station
-        // =========================================================
-        StationManager stationManager = StationManager.getInstance();
-
-        System.out.println("User Story 3.1 – Create Charging Station");
-        // make sure StationManager knows the location
-        stationManager.addLocation(validLocation);
-
-        ChargingStation validStation = stationManager.createStation(
-                validLocation.getLocationId(),
-                "station01",
-                StationType.AC,
-                150,
-                0.35
-        );
-        System.out.println("Created Charging Station:");
-        System.out.println(validStation);
-        System.out.println();
-
-        System.out.println("User Story 3.2 – Read Charging Station");
-        System.out.println("All Station Information:");
-        System.out.println(StationManager.getInstance().getAllStationInformation());
-        System.out.println();
-
-        System.out.println("User Story 3.3 – Update Charging Station");
-        if (validStation != null) {
-            validStation.setPricing(0.50F);
-            System.out.println("Updated Charging Station:");
-            System.out.println(validStation);
-        }
-        System.out.println();
-
-        // =========================================================
-        // EPIC 4 – Charging Process Management
-        // User Story 4.1 – Start Charging Process
-        // User Story 4.2 – Read Charging Status
-        // User Story 4.3 – Update Charging Status
-        // =========================================================
-        ChargingProcessManager processManager = ChargingProcessManager.getInstance();
-
-        System.out.println("User Story 4.1 – Start Charging Process");
-        Long stationId = validStation != null ? validStation.getStationId() : 1010L;
-        ChargingProcess process = processManager.startProcess(
-                userId,
-                stationId,
-                validStation != null ? validStation.getStationName() : "station01",
-                ChargingMode.FAST,
-                40,   // initial battery level
-                80,   // target battery level
-                11,   // power in kW
-                30    // time to full in minutes
-        );
-        System.out.println("Charging process started with sessionId: " + process.getSessionId());
-        System.out.println("Battery after start: " + process.getBatteryPercentage()
-                + "%, status: " + process.getStatus());
-        System.out.println();
-
-        System.out.println("User Story 4.2 – Read Charging Status");
-        ChargingProcess sameProcess = processManager.getProcess(process.getSessionId());
-        System.out.println("Current charging status:");
-        System.out.println("Battery: " + sameProcess.getBatteryPercentage() + "%");
-        System.out.println("Mode: " + sameProcess.getMode());
-        System.out.println("Status: " + sameProcess.getStatus());
-        System.out.println();
-
-        System.out.println("User Story 4.3 – Update Charging Status");
-        processManager.updateBatteryPercentage(process.getSessionId(), 100);
-        processManager.completeProcess(process.getSessionId());
-        ChargingProcess completed = processManager.getProcess(process.getSessionId());
-        System.out.println("After completion:");
-        System.out.println("Battery: " + completed.getBatteryPercentage() + "%");
-        System.out.println("Status: " + completed.getStatus());
-        completed.setExpectedRangeKm(200);
-        completed.setDrivenDistanceKm(195);
-        System.out.println("Driven distance within 5% tolerance: "
-                + completed.isDrivenDistanceWithinTolerance(5));
-        System.out.println();
-
-        // =========================================================
-        // EPIC 8 – Manage Pricing of Charging Stations
-        // User Story 8.1 – Create Pricing
-        // User Story 8.2 – Update Pricing
-        // =========================================================
-        System.out.println("User Story 8.1 – Create Pricing Rule");
-        PricingManager pricingManager = new PricingManager();
-
-        PricingRules pricingRule = new PricingRules();
-        pricingRule.setPricingId(1001);
-        if (validLocation != null) {
-            pricingRule.setLocationId(validLocation.getLocationId().intValue());
-        }
-        pricingRule.setValidFrom(20240101); // simple numeric date representation
-        pricingRule.setValidTo(20241231);
-        pricingRule.getPriceComponents().add(PriceComponent.KWH_AC);
-        pricingRule.setActive(true);
-
-        pricingManager.addPricingRule(pricingRule);
-        System.out.println("Created Pricing Rule:");
-        System.out.println("pricingId: " + pricingRule.getPricingId());
-        System.out.println("locationId: " + pricingRule.getLocationId());
-        System.out.println("validFrom: " + pricingRule.getValidFrom());
-        System.out.println("validTo: " + pricingRule.getValidTo());
-        System.out.println("active: " + pricingRule.isActive());
-        System.out.println("priceComponents: " + pricingRule.getPriceComponents());
-        System.out.println();
-
-        System.out.println("User Story 8.2 – Update Pricing Rule (activate/deactivate)");
-        pricingRule.setActive(false);
-        System.out.println("Pricing rule active after update: " + pricingRule.isActive());
-        System.out.println();
-
-        // =========================================================
-        // EPIC 9 – Invoice Management (FIXED für US 5.1/5.2)
-        // =========================================================
-        System.out.println("User Story 5.1 & 5.2 – Read and Sort Invoices");
-        InvoiceManager invoiceManager = InvoiceManager.getInstance();
-
-        // Beispiel-Rechnung erstellen
-        Invoice demoInvoice = new Invoice(
-                12345L,                 // Customer ID
-                "Demo Station",         // Station Name
-                "FAST",                 // Mode
-                50.0,                   // kWh
-                30,                     // Duration
-                0.50,                   // Price
-                25.00,                  // Total
-                new Date(),             // Start Time
-                "PAID"                  // Status
-        );
-        invoiceManager.createInvoice(demoInvoice);
-
-        System.out.println("Invoice History:");
-        System.out.println(invoiceManager.viewHistory());
-
-        System.out.println("Demo finished.");
+        //2.2
+        System.out.println(ANSI_GREEN + "\nI want to charge my car at a station.\nBut my balance is too low to cover charging costs." + ANSI_RESET);
+        chargingStation.setPricing(600);
+        account.canStartCharging(chargingStation);
+        System.out.println(ANSI_GREEN + "\nI top my balance up so that I can start charging." + ANSI_RESET);
+        accountManager.readPrepaidBalance(account);
+        account.setPrepaidAmount("100");
+        account.getPaymentConfirmationMessage();
+        accountManager.updatePrepaidBalance(account);
+        account.canStartCharging(chargingStation);
     }
 }
