@@ -4,13 +4,10 @@ import org.example.enums.AccountType;
 import org.example.enums.ChargingMode;
 import org.example.managementClasses.AccountManager;
 import org.example.managementClasses.ChargingProcessManager;
-import org.example.managementClasses.StationManager;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Account {
@@ -25,10 +22,7 @@ public class Account {
     private float prepaidBalance = 0;
     private ArrayList <String> paymentMethods = new ArrayList<String>
             (Arrays.asList("credit card", "debit card", "paypal", "bank transfer", "apple pay", "google pay"));
-
-
-    private float balance = 0f;
-    private boolean charginProcess = false;
+    private boolean chargingProcess = false;
     private LocalDateTime chargingProcessTime;
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
@@ -168,33 +162,23 @@ public class Account {
         return true;
     }
 
-    public void updateBalance(float amount) {
-        if(amount > 0){
-            this.balance += amount;
-        } else if (role == AccountType.OWNER) {
-            this.balance += amount;
-        }
-    }
-
-    public float getBalance() {
-        return balance;
-    }
-
     public void startChargingProcess(long stationId, String stationName, ChargingMode mode,int currentBattery, int targetBattery, int powerKW, int timeToFullMinutes) {
         ChargingProcessManager.getInstance().startProcess(userId, stationId, stationName, mode, currentBattery, targetBattery, powerKW, timeToFullMinutes);
     }
 
     public void setChargingProcess(int timeToFinish) {
-        if(!charginProcess){
-            charginProcess = true;
+        if(!chargingProcess){
+            chargingProcess = true;
             this.chargingProcessTime = LocalDateTime.now().plusMinutes(timeToFinish);
         }
     }
 
     public boolean readChargingProcess(){
-        if(charginProcess && chargingProcessTime.isAfter(LocalDateTime.now())){
-            this.charginProcess = false;
+        if(chargingProcess && chargingProcessTime.isBefore(LocalDateTime.now())){
+            this.chargingProcess = false;
+        } else if (!chargingProcess) {
+            return false;
         }
-        return charginProcess;
+        return chargingProcess;
     }
 }

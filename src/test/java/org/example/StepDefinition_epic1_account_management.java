@@ -195,13 +195,7 @@ public class StepDefinition_epic1_account_management {
 
     @And("the Accounts balance is zero")
     public void theAccountsBalanceIsZero() {
-        if(AccountManager.getInstance().readAccount(account.getUserId()).getBalance() != 0){
-            AccountManager.getInstance().readAccount(account.getUserId()).setRole(AccountType.OWNER);
-            AccountManager.getInstance().readAccount(account.getUserId()).updateBalance(
-                    -AccountManager.getInstance().readAccount(account.getUserId()).getBalance()
-            );
-            AccountManager.getInstance().readAccount(account.getUserId()).setRole(AccountType.CUSTOMER);
-        }
+        account.setPrepaidBalance(0);
     }
 
     @When("the user wants to delete the Account with the correct password")
@@ -217,7 +211,7 @@ public class StepDefinition_epic1_account_management {
 
     @And("the Account balance is {float}")
     public void theAccountBalanceIs(float arg0) {
-        AccountManager.getInstance().readAccount(userId).updateBalance(arg0);
+        AccountManager.getInstance().readAccount(userId).setPrepaidBalance(arg0);
     }
 
     @Then("an error indicates that it is not allowed to delete Accounts with a balance not equal to zero")
