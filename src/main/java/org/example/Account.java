@@ -4,13 +4,10 @@ import org.example.enums.AccountType;
 import org.example.enums.ChargingMode;
 import org.example.managementClasses.AccountManager;
 import org.example.managementClasses.ChargingProcessManager;
-import org.example.managementClasses.StationManager;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Account {
@@ -28,7 +25,7 @@ public class Account {
 
 
     private float balance = 0f;
-    private boolean charginProcess = false;
+    private boolean chargingProcess = false;
     private LocalDateTime chargingProcessTime;
 
     private boolean isInputValid (String username, String email, String password, AccountType role){
@@ -185,16 +182,16 @@ public class Account {
     }
 
     public void setChargingProcess(int timeToFinish) {
-        if(!charginProcess){
-            charginProcess = true;
+        if(!chargingProcess){
+            chargingProcess = true;
             this.chargingProcessTime = LocalDateTime.now().plusMinutes(timeToFinish);
         }
     }
 
     public boolean readChargingProcess(){
-        if(charginProcess && chargingProcessTime.isAfter(LocalDateTime.now())){
-            this.charginProcess = false;
+        if(chargingProcess && chargingProcessTime.isAfter(LocalDateTime.now())){
+            this.chargingProcess = false;
         }
-        return charginProcess;
+        return chargingProcess;
     }
 }
