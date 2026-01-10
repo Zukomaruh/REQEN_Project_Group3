@@ -93,7 +93,11 @@ public class AccountManager {
             Account tempAccount = readAccount(userId);
             if(tempAccount.getPassword().equals(password)){
                 if(tempAccount.getBalance() == 0){
-                    accounts.remove(readAccount(userId));
+                    if(tempAccount.readChargingProcess()){
+                        accounts.remove(readAccount(userId));
+                    }else {
+                        throw new IllegalArgumentException("You cannot delete an Account with an active charging process!");
+                    }
                 }else{
                     throw new IllegalArgumentException("You cannot delete an Account with a balance not zero!");
                 }

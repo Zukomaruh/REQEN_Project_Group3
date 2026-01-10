@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
+import org.example.managementClasses.AccountManager;
 
 public class ChargingProcess {
 
@@ -32,6 +33,9 @@ public class ChargingProcess {
                            int powerKW,
                            int timeToFullMinutes,
                            SessionStatus status) {
+        if(AccountManager.getInstance().readAccount(customerId) != null){
+            AccountManager.getInstance().readAccount(customerId).setChargingProcess(timeToFullMinutes);
+        }
         this.sessionId = sessionId;
         this.customerId = customerId;
         this.stationId = stationId;
