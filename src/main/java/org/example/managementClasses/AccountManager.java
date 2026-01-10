@@ -95,6 +95,7 @@ public class AccountManager {
                 if(tempAccount.getBalance() == 0){
                     if(tempAccount.readChargingProcess()){
                         accounts.remove(readAccount(userId));
+                        System.out.println("Your account was deleted.");
                     }else {
                         throw new IllegalArgumentException("You cannot delete an Account with an active charging process!");
                     }
