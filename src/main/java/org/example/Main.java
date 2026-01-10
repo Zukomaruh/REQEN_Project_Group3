@@ -203,40 +203,28 @@ public class Main {
         System.out.println();
 
         // =========================================================
-        // EPIC 9 – Invoice Management
-        // User Story 9.1 – Create Invoice
-        // User Story 9.2 – View Invoice History
-        // (Korrekturen etc. werden intern im InvoiceManager gehandhabt)
+        // EPIC 9 – Invoice Management (FIXED für US 5.1/5.2)
         // =========================================================
-        System.out.println("User Story 9.1 – Create Invoice from Session");
-        InvoiceManager invoiceManager = new InvoiceManager();
+        System.out.println("User Story 5.1 & 5.2 – Read and Sort Invoices");
+        InvoiceManager invoiceManager = InvoiceManager.getInstance();
 
-        Date startTime = new Date();
-        Date endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // +1 hour
-
-        // set current price (simulating price at start of session)
-        invoiceManager.setCurrentPrice(0.30);
-        invoiceManager.createInvoiceFromSession(
-                20.0,          // kWh
-                60,            // duration in minutes
-                "FAST",        // mode
-                validStation != null ? validStation.getStationName() : "station01",
-                startTime,
-                endTime,
-                "PRICING_RULE_1001"
+        // Beispiel-Rechnung erstellen
+        Invoice demoInvoice = new Invoice(
+                12345L,                 // Customer ID
+                "Demo Station",         // Station Name
+                "FAST",                 // Mode
+                50.0,                   // kWh
+                30,                     // Duration
+                0.50,                   // Price
+                25.00,                  // Total
+                new Date(),             // Start Time
+                "PAID"                  // Status
         );
+        invoiceManager.createInvoice(demoInvoice);
 
-        Invoice firstInvoice = invoiceManager.getInvoice(0);
-        System.out.println("Created Invoice details:");
-        System.out.println(invoiceManager.viewDetails(firstInvoice));
-        System.out.println(invoiceManager.downloadPDF(firstInvoice));
-        System.out.println();
+        System.out.println("Invoice History:");
+        System.out.println(invoiceManager.viewHistory());
 
-        System.out.println("User Story 9.2 – View Invoice History");
-        String history = invoiceManager.viewHistory();
-        System.out.println(history);
-        System.out.println();
-
-        System.out.println("Demo finished – all implemented User Stories (Epics 1, 3, 4, 6, 8, 9) executed in Main.");
+        System.out.println("Demo finished.");
     }
 }

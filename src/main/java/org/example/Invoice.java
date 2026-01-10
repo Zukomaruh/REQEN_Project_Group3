@@ -1,137 +1,82 @@
 package org.example;
 
+import java.util.Date;
+
 public class Invoice {
+    private static long idCounter = 1;
+    private Long invoiceId;
+    private Long customerId;      // Wichtig für US 5.1 (Filter nach Kunde)
+    private String stationName;
+    private String chargingMode;
     private double kWh;
-    private int duration;
-    private String mode;
-    private String station;
-    private java.util.Date startTime;
-    private java.util.Date endTime;
+    private int durationMinutes;
     private double pricePerKWh;
     private double totalCost;
-    private String appliedPricingRule;
+    private Date startTime;       // Wichtig für US 5.2 (Sortierung)
     private String status;
-    private double customerBalance; // For prepaid simulation
 
+    // Leerer Konstruktor für Flexibilität
     public Invoice() {
+        this.invoiceId = idCounter++;
     }
 
-    public Invoice(double kWh, int duration, String mode, String station, java.util.Date startTime, java.util.Date endTime, double pricePerKWh, String appliedPricingRule) {
+    // Neuer Haupt-Konstruktor
+    public Invoice(Long customerId, String stationName, String chargingMode, double kWh, int durationMinutes, double pricePerKWh, double totalCost, Date startTime, String status) {
+        this.invoiceId = idCounter++;
+        this.customerId = customerId;
+        this.stationName = stationName;
+        this.chargingMode = chargingMode;
         this.kWh = kWh;
-        this.duration = duration;
-        this.mode = mode;
-        this.station = station;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.durationMinutes = durationMinutes;
         this.pricePerKWh = pricePerKWh;
-        this.appliedPricingRule = appliedPricingRule;
-        this.totalCost = kWh * pricePerKWh;
-        this.status = "Created";
-        this.customerBalance = 0; // Default
-    }
-
-    // Getters and Setters
-    public double getkWh() {
-        return kWh;
-    }
-
-    public void setkWh(double kWh) {
-        this.kWh = kWh;
-        this.totalCost = this.kWh * this.pricePerKWh;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    public String getStation() {
-        return station;
-    }
-
-    public void setStation(String station) {
-        this.station = station;
-    }
-
-    public java.util.Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(java.util.Date startTime) {
+        this.totalCost = totalCost;
         this.startTime = startTime;
-    }
-
-    public java.util.Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(java.util.Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public double getPricePerKWh() {
-        return pricePerKWh;
-    }
-
-    public void setPricePerKWh(double pricePerKWh) {
-        this.pricePerKWh = pricePerKWh;
-        this.totalCost = this.kWh * this.pricePerKWh;
-    }
-
-    public double getTotalCost() {
-        return totalCost;
-    }
-
-    public String getAppliedPricingRule() {
-        return appliedPricingRule;
-    }
-
-    public void setAppliedPricingRule(String appliedPricingRule) {
-        this.appliedPricingRule = appliedPricingRule;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
         this.status = status;
     }
 
-    public double getCustomerBalance() {
-        return customerBalance;
-    }
+    // Getter & Setter (Notwendig für Manager & Tests)
+    public Long getInvoiceId() { return invoiceId; }
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
 
-    public void setCustomerBalance(double customerBalance) {
-        this.customerBalance = customerBalance;
-    }
+    public Date getStartTime() { return startTime; }
+    public void setStartTime(Date startTime) { this.startTime = startTime; }
 
-    public void deductFromBalance() {
-        if (this.customerBalance >= this.totalCost) {
-            this.customerBalance -= this.totalCost;
-        } else {
-            // Simulate insufficient balance, but for test, just set to negative or handle
-            this.customerBalance -= this.totalCost;
-        }
-    }
+    public String getStationName() { return stationName; }
+    public void setStationName(String stationName) { this.stationName = stationName; }
 
+    public double getTotalCost() { return totalCost; }
+    public void setTotalCost(double totalCost) { this.totalCost = totalCost; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public double getkWh() { return kWh; }
+    public void setkWh(double kWh) { this.kWh = kWh; }
+
+    public double getPricePerKWh() { return pricePerKWh; }
+    public void setPricePerKWh(double pricePerKWh) { this.pricePerKWh = pricePerKWh; }
+
+    public int getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(int durationMinutes) { this.durationMinutes = durationMinutes; }
+
+    public String getChargingMode() { return chargingMode; }
+    public void setChargingMode(String mode) { this.chargingMode = mode; }
+
+    // Methoden für PDF/Details (aus altem Code übernommen)
     public String generatePDF() {
-        // Simulate PDF generation
-        return "PDF generated for invoice with total: " + totalCost;
+        return "PDF generated for invoice #" + invoiceId + " with total: " + totalCost;
     }
 
     public String getDetails() {
-        return "Start time: " + startTime + "\nEnd time: " + endTime + "\nkWh charged: " + kWh + "\nPrice per kWh: " + pricePerKWh + "\nTotal cost: " + totalCost + "\nApplied pricing rule: " + appliedPricingRule;
+        return "Invoice #" + invoiceId + "\n" +
+                "Date: " + startTime + "\n" +
+                "Station: " + stationName + "\n" +
+                "Total: " + totalCost;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Invoice #%d | Cust: %d | %s | %.2f EUR | %s", invoiceId, customerId, startTime, totalCost, status);
     }
 }

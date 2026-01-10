@@ -1,77 +1,36 @@
 Feature: Invoice Management
-  As owner and customer
-  I want to create, read, update, and delete invoice information
-  so that I can track charging sessions, payments, and account balances reliably
+  As a customer
+  I want to read and sort my invoice records
+  so I know how much I spent.
 
-  #User Story 9.1 - Create Invoices
-  Scenario: Automatically create an invoice entry when a charging session ends
-    Given a charging session has ended
-    When the session result is received with:
-      | kWh      |
-      | duration |
-      | mode     |
-      | station  |
-    Then an invoice record is created automatically
+  # User Story 5.1 - Read Invoices
+  Scenario: Customer reads their invoice list
+    Given a "Customer" with ID 1001 exists
+    And the customer has the following "Invoices":
+      | stationName | chargingMode | kWh | duration | pricePerKWh | totalCost | startTime           | status |
+      | Station A   | AC           | 10  | 60       | 0.50        | 5.00      | 2024-05-01T10:00:00 | PAID   |
+      | Station B   | DC           | 50  | 30       | 0.80        | 40.00     | 2024-05-05T14:00:00 | PAID   |
+    When the customer requests the invoice list
+    Then the list contains 2 invoices
+    And the first invoice is from "Station A" with total cost 5.00
 
-  Scenario: Apply the price valid at the start of the charging session
-    Given prices may have changed during the day
-    When the invoice is created
-    Then the system applies the price valid at the start time of the charging session
+  # User Story 5.2 - Sort Invoices
+  # Edge Case: Sortierung prüfen
+  Scenario: Invoices are displayed sorted by date (oldest first)
+    Given a "Customer" with ID 1001 exists
+    And the customer has the following "Invoices":
+      | stationName | chargingMode | kWh | duration | pricePerKWh | totalCost | startTime           | status |
+      | Station New | DC           | 20  | 15       | 0.90        | 18.00     | 2024-06-01T12:00:00 | UNPAID |
+      | Station Old | AC           | 10  | 60       | 0.50        | 5.00      | 2024-01-01T08:00:00 | PAID   |
+    When the customer requests the invoice list
+    Then the list contains 2 invoices
+    And the invoices are sorted by "Start Time" (oldest first)
+    And the first invoice is from "Station Old" starting at "2024-01-01T08:00:00"
 
-  Scenario: Deduct charged amount from customer's prepaid balance
-    Given the customer uses a prepaid system
-    When the invoice is generated
-    Then the charged amount is deducted from the customer’s available balance
-
-  #User Story 9.2 - Read Invoices
-  Scenario: View itemized invoice details
-  As customer
-  I want to view detailed invoice information
-  so that I can verify charging sessions and resolve disputes
-    Given I open an invoice
-    When I expand the invoice details
-    Then I see itemized rows containing:
-      | Start time        |
-      | End time          |
-      | kWh charged       |
-      | Price per kWh     |
-      | Total cost        |
-      | Applied pricing rule |
-
-  Scenario: Download invoice PDF
-    Given I click "Download PDF"
-    When the request is made
-    Then a correctly formatted PDF invoice is generated instantly
-    And the PDF is available for immediate download
-
-  Scenario: Flag invoice for correction
-    Given I detect a billing error
-    When I click "Flag for correction"
-    Then the invoice is marked as "Needs Review"
-    And the action is logged with reporter and timestamp
-    And the invoice appears in the "Needs Review" queue
-
-  #User Story 9.3 - Update Invoices
-  Scenario: Correct and reissue an incorrect invoice
-  As owner
-  I want to correct and reissue an incorrect invoice
-  so that billing errors can be fixed transparently.
-
-    Given an invoice is flagged or selected for correction
-    When I open the correction tool
-    Then I can adjust the following fields:
-      | kWh     |
-      | price   |
-      | duration |
-    And I can generate a credit note and a corrected invoice
-
-  Scenario: Send corrected invoice and credit note to customer
-    Given a correction is saved
-    When the process is completed
-    Then the customer automatically receives the credit note and the corrected invoice via email
-
-  Scenario: Mark original invoice as corrected
-    Given the correction is processed
-    When I view the customer’s invoice history
-    Then the original invoice is shown as "Cancelled/Corrected"
-    And a link to the new invoice version is displayed
+  # Edge Case: Leere Liste (US 5.1)
+  Scenario: Customer has no invoices
+    Given a "Customer" with ID 9999 exists
+    And the customer has no invoices
+    When the customer requests the invoice list
+    Then the system returns an empty list
+    And a message "No invoices found" is displayed
