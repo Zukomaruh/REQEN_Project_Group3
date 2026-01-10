@@ -188,6 +188,10 @@ public class Account {
         if(!charginProcess){
             charginProcess = true;
             this.chargingProcessTime = LocalDateTime.now().plusMinutes(timeToFinish);
+            if(timeToFinish == 0){
+                System.out.println("Your charging process was terminated.");
+            }
+            System.out.println("Your charging process was set to: "+this.chargingProcessTime);
         }
     }
 
