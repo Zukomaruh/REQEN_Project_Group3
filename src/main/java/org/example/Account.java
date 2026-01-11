@@ -20,7 +20,7 @@ public class Account {
     private float prepaidAmount = 0;
     private String paymentMethod;
     private float prepaidBalance = 0;
-    private ArrayList <String> paymentMethods = new ArrayList<String>
+    private final ArrayList <String> paymentMethods = new ArrayList<String>
             (Arrays.asList("credit card", "debit card", "paypal", "bank transfer", "apple pay", "google pay"));
     private boolean chargingProcess = false;
     private LocalDateTime chargingProcessTime;
@@ -150,15 +150,16 @@ public class Account {
     }
 
     public void getPaymentConfirmationMessage() {
-        System.out.println("Selected amount: "+this.prepaidAmount+ "%nSelected payment method: "+this.paymentMethod);
+        System.out.println("Selected amount: "+this.prepaidAmount+ "\nSelected payment method: "+this.paymentMethod);
     }
 
     public boolean canStartCharging(ChargingStation chargingStation) {
         float pricing = chargingStation.getPricing();
         if (this.getPrepaidBalance() < pricing) {
-            System.out.println("Charging terminated: Insufficient balance");
+            System.out.println("Charging terminated: Insufficient balance.\nMissing amount: "+(pricing-this.getPrepaidBalance()));
             return false;
         }
+        System.out.println("Sufficient prepaid balance.\nBalance after charging: "+(pricing-this.getPrepaidBalance()));
         return true;
     }
 
@@ -170,6 +171,10 @@ public class Account {
         if(!chargingProcess){
             chargingProcess = true;
             this.chargingProcessTime = LocalDateTime.now().plusMinutes(timeToFinish);
+            if(timeToFinish == 0){
+                System.out.println("Your charging process was terminated.");
+            }
+            System.out.println("Your charging process was set to: "+this.chargingProcessTime);
         }
     }
 

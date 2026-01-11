@@ -11,7 +11,12 @@ public class PricingManager {
     private final List<PricingRules> pricingRules = new ArrayList<>();
 
     public void addPricingRule(PricingRules rule) {
+        if(rule.getValidFrom() == 0){
+            System.out.println("Creation failed! Please enter valid pricing settings.");
+        } else {
         pricingRules.add(rule);
+        System.out.println("Pricing rule created successfully");
+        rule.setActive(true);}
     }
 
     public List<PricingRules> getPricingRules() {
@@ -24,5 +29,6 @@ public class PricingManager {
 
     public void removePricingRule(int id) {
         pricingRules.removeIf(r -> r.getPricingId() == id);
+        System.out.println("Pricing rule removed successfully");
     }
 }

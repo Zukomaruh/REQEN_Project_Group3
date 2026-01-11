@@ -2,7 +2,7 @@ Feature: Charging Station
   As customer
   I want to read information about the charging stations
   so that I can make an informed decision
-  # User Story X.X - create Charging Station
+  # User Story 3.1 - create Charging Station
   Scenario: create charging station with location ID
   As an owner
   I want to create a charging station
@@ -36,7 +36,7 @@ Feature: Charging Station
     Then no charging station is created
     And an error is printed that says "Creation failed! Please enter valid Station settings"
 
-  # User Story 3.1 – read Charging Station
+  # User Story 3.2 – read Charging Station
   Scenario: read all charging Station information for one location
   As a customer
   I want to read information about the charging stations
@@ -88,7 +88,7 @@ Feature: Charging Station
     price: 0,50 EUR/kWh
     ---
     """
-  # User Story 7.3 Update Charging Station
+  # User Story 3.3 Update Charging Station
   Scenario: Update existing Charging Station with valid value
   As an owner
   I want to update a charging station

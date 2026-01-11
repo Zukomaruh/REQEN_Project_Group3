@@ -24,11 +24,11 @@ public class AccountManager {
         float amount = account.getPrepaidAmount();
         if (account.getPrepaidBalance() == 0){
             account.setPrepaidBalance(amount);
-            System.out.printf("Prepaid Balance successfully updated to %.2f!", amount);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!\n", amount);
         } else {
             float prepaidBalance = Math.round(account.getPrepaidBalance() + amount);
             account.setPrepaidBalance(prepaidBalance);
-            System.out.printf("Prepaid Balance successfully updated to %.2f!", prepaidBalance);
+            System.out.printf("Prepaid Balance successfully updated to %.2f!\n", prepaidBalance);
         }
     }
 
@@ -58,6 +58,10 @@ public class AccountManager {
         return null;
     }
 
+    public void readPrepaidBalance(Account account){
+        System.out.println("The current balance is: "+account.getPrepaidBalance());
+    }
+
     public List<Account> readAccounts(){
         return accounts;
     }
@@ -69,6 +73,7 @@ public class AccountManager {
                     account.setUsername(username);
                 }
             }
+            System.out.printf("Username updated to %s.",username);
         }
     }
 
@@ -95,6 +100,7 @@ public class AccountManager {
                 if(tempAccount.getPrepaidBalance() == 0){
                     if(!tempAccount.readChargingProcess()){
                         accounts.remove(readAccount(userId));
+                        System.out.println("Your account was deleted.");
                     }else {
                         throw new IllegalArgumentException("You cannot delete an Account with an active charging process!");
                     }

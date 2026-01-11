@@ -57,7 +57,7 @@ public class ChargingProcess {
     public void updateBatteryPercentage(int newPercentage) {
         if (newPercentage < batteryPercentage) {
             // wir ignorieren sinkende Werte – US 4.2: „only increases“
-            return;
+            throw new IllegalArgumentException("Battery percentage cannot be decreased.");
         }
 
         if (newPercentage > 100) {
@@ -70,6 +70,7 @@ public class ChargingProcess {
             this.status = SessionStatus.COMPLETED;
             this.timeToFullMinutes = 0;
         }
+        System.out.printf("Charging completed!\nNew battery percentage: %d\n",this.batteryPercentage);
     }
 
     public void complete() {
@@ -186,5 +187,11 @@ public class ChargingProcess {
 
     public void setStatus(SessionStatus status) {
         this.status = status;
+    }
+
+    public void getChargingInformation() {
+        ChargingProcess process = this;
+        System.out.printf("customerID: %s\nstationID: %s\nbatteryPercentage: %s\npowerKW: %s\ntimeToFullMinutes: %s\nstatus: %s\n"
+                ,process.getCustomerId(), process.getStationId(), process.getBatteryPercentage(), process.getPowerKW(), process.getTimeToFullMinutes(), process.getStatus());
     }
 }

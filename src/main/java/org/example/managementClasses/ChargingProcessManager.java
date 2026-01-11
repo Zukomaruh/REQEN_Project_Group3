@@ -3,6 +3,7 @@ package org.example.managementClasses;
 import org.example.ChargingProcess;
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
+import org.example.enums.StationStatus;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -59,6 +60,8 @@ public class ChargingProcessManager {
         );
 
         processes.put(sessionId, process);
+        StationManager stationManager = StationManager.getInstance();
+        stationManager.findStationByName(stationName).setStatus(StationStatus.CHARGING);
         return process;
     }
 
