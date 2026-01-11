@@ -70,3 +70,23 @@ Feature: Manage Pricing of Charging Stations
     Then a pricing confirmation message is printed that says "Pricing updates successfully."
     And the new pricing 0,5 is displayed
 
+    # User Story 8.4 - Delete / Deactivate Pricing
+
+  Scenario: delete pricing rule successfully
+    Given a pricing exists with the pricingId 1001
+    And the pricing rule is not in use by active sessions
+    When I request deletion of the pricing rule with the pricingId 1001
+    Then the pricing rule with pricingId 1001 is removed from the pricing list
+    And a pricing confirmation message is printed that says "Pricing rule removed successfully"
+
+  Scenario: reject deletion when pricing rule is in use (active sessions exist)
+    Given the pricing rule with the pricingId 1001 is in use by active sessions
+    When I request deletion of the pricing rule with the pricingId 1001
+    Then the system rejects the deletion
+    And a pricing error message is printed that says "Deletion failed! Pricing rule is currently in use."
+
+  Scenario: reject deletion when pricing rule does not exist
+    Given no pricing rule exists with the pricingId 9999
+    When I request deletion of the pricing rule with the pricingId 9999
+    Then the system rejects the deletion
+    And a pricing error message is printed that says "Deletion failed! Pricing rule not found."
