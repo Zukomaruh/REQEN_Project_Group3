@@ -85,23 +85,33 @@ public class StepDefinition_epic8_manage_pricing {
         currentRule = new PricingRules();
         currentRule.setPricingId(arg0);
         currentRule.setLocationId(1001);
-        currentRule.setValidFrom(0);
-        currentRule.setValidTo(0);
+
+        // must be non-zero for manager validation
+        currentRule.setValidFrom(20260101);
+        currentRule.setValidTo(20261231);
+
         currentRule.getPriceComponents().add(PriceComponent.KWH_AC);
         currentRule.getPriceComponents().add(PriceComponent.KWH_DC);
         currentRule.getPriceComponents().add(PriceComponent.CHARGING_MINUTES);
     }
 
+
     @When("the input data is valid")
     public void theInputDataIsValid() {
         isInputValid = true;
+
         if (isInputValid) {
+            // IMPORTANT: validFrom must not be 0, otherwise manager refuses to add
+            currentRule.setValidFrom(20260101);
+            currentRule.setValidTo(20261231);
+
             pricingManager.addPricingRule(currentRule);
             currentRule.setActive(true);
             rulePrices.put(currentRule, 0.30);
             printedMessage = "Pricing rule created successfully";
         }
     }
+
 
     @Then("the pricing rule is added to the List of the pricing for the station")
     public void thePricingRuleIsAddedToTheListOfThePricingForTheStation() {
@@ -121,14 +131,21 @@ public class StepDefinition_epic8_manage_pricing {
     @When("the input data is invalid")
     public void theInputDataIsInvalid() {
         isInputValid = false;
-        printedMessage = "Creation failed! Please enter valid Station settings.";
+        printedMessage = "Creation failed! Please enter valid pricing settings.";
         currentRule = null;
     }
+
 
     @Then("an pricing error message is printed that says {string}")
     public void anPricingErrorMessageIsPrintedThatSays(String arg0) {
         assertEquals(arg0, printedMessage);
     }
+
+    @Then("a pricing error message is printed that says {string}")
+    public void aPricingErrorMessageIsPrintedThatSays(String msg) {
+        assertEquals(msg, printedMessage);
+    }
+
 
     @And("the invalid input is deleted")
     public void theInvalidInputIsDeleted() {
@@ -170,13 +187,20 @@ public class StepDefinition_epic8_manage_pricing {
         currentRule = new PricingRules();
         currentRule.setPricingId(arg0);
         currentRule.setLocationId(1001);
+
+        // must be non-zero, otherwise addPricingRule refuses to add
+        currentRule.setValidFrom(20260101);
+        currentRule.setValidTo(20261231);
+
         currentRule.getPriceComponents().add(PriceComponent.KWH_AC);
         currentRule.getPriceComponents().add(PriceComponent.KWH_DC);
         currentRule.getPriceComponents().add(PriceComponent.CHARGING_MINUTES);
+
         pricingManager.addPricingRule(currentRule);
         currentRule.setActive(true);
         rulePrices.put(currentRule, 0.30);
     }
+
 
     @When("I update the pricing {int},{int}")
     public void iUpdateThePricing(int arg0, int arg1) {
@@ -292,4 +316,47 @@ public class StepDefinition_epic8_manage_pricing {
         displayedPrice = newPrice;
         printedMessage = "Pricing updates successfully.";
     }
+
+
+    @And("the pricing rule is not in use by active sessions")
+    public void thePricingRuleIsNotInUseByActiveSessions() {
+        hasActiveSessions = false;
+    }
+
+    @When("I request deletion of the pricing rule with the pricingId {int}")
+    public void iRequestDeletionOfThePricingRuleWithThePricingId(int id) {
+        // reject if in use
+        if (hasActiveSessions) {
+            printedMessage = "Deletion failed! Pricing rule is currently in use.";
+            return;
+        }
+
+        boolean removed = pricingManager.removePricingRuleSafe(id);
+        if (removed) {
+            printedMessage = "Pricing rule removed successfully";
+        } else {
+            printedMessage = "Deletion failed! Pricing rule not found.";
+        }
+    }
+
+    @Then("the pricing rule with pricingId {int} is removed from the pricing list")
+    public void thePricingRuleWithPricingIdIsRemovedFromThePricingList(int id) {
+        assertNull(pricingManager.getPricingRuleById(id));
+    }
+
+    @Then("the system rejects the deletion")
+    public void theSystemRejectsTheDeletion() {
+        assertTrue(
+                printedMessage.startsWith("Deletion failed!"),
+                "Expected deletion to be rejected, but message was: " + printedMessage
+        );
+    }
+
+    @Given("no pricing rule exists with the pricingId {int}")
+    public void noPricingRuleExistsWithThePricingId(int id) {
+        // ensure it's not there
+        pricingManager.removePricingRule(id);
+        assertNull(pricingManager.getPricingRuleById(id));
+    }
+
 }

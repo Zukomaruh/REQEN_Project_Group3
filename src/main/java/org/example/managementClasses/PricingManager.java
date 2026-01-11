@@ -28,7 +28,19 @@ public class PricingManager {
     }
 
     public void removePricingRule(int id) {
-        pricingRules.removeIf(r -> r.getPricingId() == id);
-        System.out.println("Pricing rule removed successfully");
+        boolean removed = removePricingRuleSafe(id);
+        if (!removed) {
+            System.out.println("Deletion failed! Pricing rule not found.");
+        }
     }
+
+
+    public boolean removePricingRuleSafe(int id) {
+        boolean removed = pricingRules.removeIf(r -> r.getPricingId() == id);
+        if (removed) {
+            System.out.println("Pricing rule removed successfully");
+        }
+        return removed;
+    }
+
 }
