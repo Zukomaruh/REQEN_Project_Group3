@@ -32,7 +32,7 @@ public class PricingRules {
     }
 
     public void setValidFrom(int validFrom) {
-        this.validFrom = validFrom;
+            this.validFrom = validFrom;
     }
 
     public int getValidTo() {
@@ -40,7 +40,7 @@ public class PricingRules {
     }
 
     public void setValidTo(int validTo) {
-        this.validTo = validTo;
+            this.validTo = validTo;
     }
 
     public List<PriceComponent> getPriceComponents() {
