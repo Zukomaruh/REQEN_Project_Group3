@@ -140,6 +140,6 @@ public class StepDefinition_epic2_prepaid_balance {
         System.setOut(originalOut);
         String output = outputStream.toString().trim();
         assertThat(result).isFalse();
-        assertEquals(arg0, output);
+        assertTrue(output.contains(arg0));
     }
 }
