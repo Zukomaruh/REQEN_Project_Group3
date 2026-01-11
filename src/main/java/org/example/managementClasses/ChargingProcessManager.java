@@ -1,6 +1,9 @@
 package org.example.managementClasses;
 
+import org.example.Account;
+import org.example.ChargingLocation;
 import org.example.ChargingProcess;
+import org.example.ChargingStation;
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
 import org.example.enums.StationStatus;
@@ -26,7 +29,7 @@ public class ChargingProcessManager {
     /**
      * Startet einen neuen Ladevorgang (User Story 4.1).
      */
-    public ChargingProcess startProcess(Long customerId,
+    public ChargingProcess startProcess(Long userId,
                                         Long stationId,
                                         String stationName,
                                         ChargingMode mode,
@@ -35,35 +38,57 @@ public class ChargingProcessManager {
                                         int powerKW,
                                         int timeToFullMinutes) {
 
-        if (customerId == null || stationId == null
-                || stationName == null || stationName.isBlank()
-                || mode == null
-                || initialBatteryPercentage < 0 || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
-                || initialBatteryPercentage > targetBatteryPercentage
-                || powerKW <= 0
-        ) {
-            return null;
-        }
+        AccountManager accountManager = AccountManager.getInstance();
+        ChargingLocationManager chargingLocationManager = ChargingLocationManager.getInstance();
+        StationManager stationManager = StationManager.getInstance();
+        Account customer = accountManager.readAccount(userId);
+        ChargingStation station = stationManager.findStationByName(stationName);
 
-        long sessionId = sessionIdCounter++;
-        ChargingProcess process = new ChargingProcess(
-                sessionId,
-                customerId,
-                stationId,
-                stationName,
-                mode,
-                initialBatteryPercentage,
+        double pricePerKWh = station.getPricing();
+        float prepaidBalance = customer.getPrepaidBalance();
+
+        int percentageToCharge = targetBatteryPercentage - initialBatteryPercentage;
+
+        int minutesCharging =
+                ((int) percentageToCharge / 100) * timeToFullMinutes;
+
+        System.out.printf(
+                "Time to target percentage of %d: %d minutes\n",
                 targetBatteryPercentage,
-                powerKW,
-                timeToFullMinutes,
-                SessionStatus.ACTIVE
+                Math.round(minutesCharging)
         );
 
-        processes.put(sessionId, process);
-        StationManager stationManager = StationManager.getInstance();
-        stationManager.findStationByName(stationName).setStatus(StationStatus.CHARGING);
-        return process;
+        double hoursCharging = minutesCharging / 60.0;
+        double result = hoursCharging * powerKW;
+        int chargedKWh = Integer.parseInt(String.valueOf(hoursCharging * powerKW));
+        float totalCost = Float.parseFloat(String.valueOf(chargedKWh * pricePerKWh));
+
+        System.out.printf("Total cost: %s\n", totalCost);
+
+        if (prepaidBalance >= totalCost) {
+            System.out.println("Start charging …");
+            customer.setPrepaidBalance(prepaidBalance - totalCost);
+            SessionStatus status = SessionStatus.ACTIVE;
+            Long sessionId = System.currentTimeMillis();
+
+            return new ChargingProcess(sessionId, userId, stationId, stationName, mode,
+                    initialBatteryPercentage, targetBatteryPercentage, chargedKWh, minutesCharging,
+                    status
+                    );
+        } else {
+            System.out.println("Insufficient balance. Charging terminated.");
+            SessionStatus status = SessionStatus.TERMINATED;
+            Long sessionId = System.currentTimeMillis();
+            targetBatteryPercentage = 0;
+            powerKW = 0;
+
+            return new ChargingProcess(sessionId, userId, stationId, stationName, mode,
+                    initialBatteryPercentage, targetBatteryPercentage, chargedKWh, minutesCharging,
+                    status
+            );
+        }
     }
+
 
     /**
      * Liefert einen Ladevorgang anhand der Session-ID.
