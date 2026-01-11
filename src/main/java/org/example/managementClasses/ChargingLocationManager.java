@@ -134,4 +134,8 @@ public class ChargingLocationManager {
         }
         return null;
     }
+
+    public void updatePricing(long locationId, float pricing){
+        findById(locationId).setPricing(pricing);
+    }
 }
