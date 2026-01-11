@@ -57,7 +57,7 @@ public class ChargingProcess {
     public void updateBatteryPercentage(int newPercentage) {
         if (newPercentage < batteryPercentage) {
             // wir ignorieren sinkende Werte – US 4.2: „only increases“
-            return;
+            throw new IllegalArgumentException("Battery percentage cannot be decreased.");
         }
 
         if (newPercentage > 100) {
