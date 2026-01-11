@@ -26,7 +26,7 @@ Feature: Manage Pricing of Charging Stations
   Scenario: discard an invalid pricing rule
     Given a pricing rule is created with the pricingId 1001
     When the input data is invalid
-    Then an pricing error message is printed that says "Creation failed! Please enter valid Station settings."
+    Then an pricing error message is printed that says "Creation failed! Please enter valid pricing settings."
     And the invalid input is deleted
 
   # User Story 8.2 - Read Pricing
