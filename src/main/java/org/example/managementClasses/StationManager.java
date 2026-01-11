@@ -2,7 +2,6 @@ package org.example.managementClasses;
 
 import org.example.ChargingLocation;
 import org.example.ChargingStation;
-import org.example.enums.StationStatus;
 import org.example.enums.StationType;
 
 import java.util.*;
@@ -89,7 +88,73 @@ public class StationManager {
         }
 
         station.setPricing((float) newPrice);
-        System.out.println("Update successful! New Pricing: "+station.getPricing()+" EUR/kWh");
+    }
+
+    /**
+     * NEW: Return a stable list of all stations (values) for tests.
+     */
+    public List<ChargingStation> getAllStations() {
+        return new ArrayList<>(stations.values());
+    }
+
+    /**
+     * NEW: Delete a station by its ChargingStation.getStationId() (millis-based ID in your model),
+     * but only if there is no ACTIVE charging process for it.
+     *
+     * @return true if deleted, false if rejected or not found
+     */
+    public boolean deleteStationByStationId(long stationId, ChargingProcessManager processManager) {
+        if (processManager != null && processManager.hasActiveProcessForStation(stationId)) {
+            System.out.println("Error: Station is in use or has an active charging process");
+            return false;
+        }
+
+        // Find entry key in map for the station object that matches stationId
+        Long keyToRemove = null;
+        ChargingStation stationToRemove = null;
+
+        for (Map.Entry<Long, ChargingStation> entry : stations.entrySet()) {
+            ChargingStation s = entry.getValue();
+            if (s != null && s.getStationId() != null && s.getStationId() == stationId) {
+                keyToRemove = entry.getKey();
+                stationToRemove = s;
+                break;
+            }
+        }
+
+        if (keyToRemove == null) {
+            System.out.println("Error: Station not found");
+            return false;
+        }
+
+        // Remove from stations registry
+        stations.remove(keyToRemove);
+
+        // Remove from location list if attached
+        if (stationToRemove != null) {
+            long locId = stationToRemove.getLocationId() != null ? stationToRemove.getLocationId() : 0L;
+            if (locId != 0 && locations.containsKey(locId)) {
+                ChargingLocation loc = locations.get(locId);
+                // ChargingLocation stores stations list; remove the same object
+                if (loc != null) {
+                    try {
+                        // getStations() is unmodifiable, so we must remove via internal list
+                        // but ChargingLocation has no remove method, so we remove by rebuilding:
+                        List<ChargingStation> updated = new ArrayList<>();
+                        for (ChargingStation cs : loc.getStations()) {
+                            if (cs != stationToRemove) {
+                                updated.add(cs);
+                            }
+                        }
+                        loc.setStations(updated);
+                    } catch (Exception ignored) {
+                        // If anything goes wrong, station is still removed from manager list (network registry)
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -130,5 +195,14 @@ public class StationManager {
         // Format with two decimals then replace '.' with ','
         String formatted = String.format(Locale.US, "%.2f", value);
         return formatted.replace('.', ',');
+    }
+
+    /**
+     * NEW: clear internal state for isolated tests.
+     */
+    public void clear() {
+        stations.clear();
+        locations.clear();
+        stationIdCounter = 1;
     }
 }

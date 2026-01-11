@@ -100,3 +100,27 @@ Feature: Charging Station
     # value must be stationName, type, capacity, status or pricing
     And the updated station value is requested
     Then the output contains the station value "station10"
+
+
+  # User Story 3.4 – delete Charging Station
+
+  Scenario: delete charging station with no active charging process
+  As an owner
+  I want to delete a charging station
+  so that outdated or unused stations are removed from the station network.
+    Given a charging station exists with the id 2001
+    And the charging station has no active charging process
+    When the owner requests deletion of the charging station
+    Then the charging station with the id 2001 is deleted
+    And the station is removed from the station network
+    And when all charging stations are requested the deleted station no longer appears in the station list
+
+  Scenario: reject deletion of charging station with active charging process
+  As an owner
+  I want to delete a charging station
+  so that outdated or unused stations are removed from the station network.
+    Given a charging station exists with the id 2002
+    And the charging station is associated with an active charging process
+    When the owner requests deletion of the charging station
+    Then no charging station is deleted
+    And an error is printed that says "Deletion failed! Charging station is currently in use"

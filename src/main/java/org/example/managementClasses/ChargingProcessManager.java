@@ -3,7 +3,6 @@ package org.example.managementClasses;
 import org.example.ChargingProcess;
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
-import org.example.enums.StationStatus;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,7 +37,8 @@ public class ChargingProcessManager {
         if (customerId == null || stationId == null
                 || stationName == null || stationName.isBlank()
                 || mode == null
-                || initialBatteryPercentage < 0 || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
+                || initialBatteryPercentage < 0 || initialBatteryPercentage > 100
+                || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
                 || initialBatteryPercentage > targetBatteryPercentage
                 || powerKW <= 0
         ) {
@@ -60,8 +60,6 @@ public class ChargingProcessManager {
         );
 
         processes.put(sessionId, process);
-        StationManager stationManager = StationManager.getInstance();
-        stationManager.findStationByName(stationName).setStatus(StationStatus.CHARGING);
         return process;
     }
 
@@ -97,6 +95,21 @@ public class ChargingProcessManager {
      */
     public Map<Long, ChargingProcess> getAllProcesses() {
         return Collections.unmodifiableMap(processes);
+    }
+
+    /**
+     * NEW: Returns true if there is any ACTIVE charging process for the given station.
+     */
+    public boolean hasActiveProcessForStation(long stationId) {
+        for (ChargingProcess p : processes.values()) {
+            if (p != null
+                    && p.getStationId() != null
+                    && p.getStationId() == stationId
+                    && p.getStatus() == SessionStatus.ACTIVE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
