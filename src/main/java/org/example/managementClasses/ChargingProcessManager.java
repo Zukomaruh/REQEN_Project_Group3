@@ -48,10 +48,13 @@ public class ChargingProcessManager {
         float prepaidBalance = customer.getPrepaidBalance();
 
         int percentageToCharge = targetBatteryPercentage - initialBatteryPercentage;
+        int minutesCharging = 0;
 
-        int minutesCharging =
-                ((int) percentageToCharge / 100) * timeToFullMinutes;
-
+        if (timeToFullMinutes == 0){
+            System.out.println("Already fully charged.");
+        } else {
+            minutesCharging = ((int) percentageToCharge / 100) * timeToFullMinutes;
+        }
         System.out.printf(
                 "Time to target percentage of %d: %d minutes\n",
                 targetBatteryPercentage,
