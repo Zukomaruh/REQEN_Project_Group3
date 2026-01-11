@@ -18,7 +18,7 @@ public class ChargingLocationManager {
         return INSTANCE;
     }
 
-    private ChargingLocationManager() {
+    private ChargingLocationManager()  {
     }
 
 
