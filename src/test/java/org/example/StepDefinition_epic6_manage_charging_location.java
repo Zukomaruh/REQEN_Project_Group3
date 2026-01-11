@@ -32,6 +32,11 @@ public class StepDefinition_epic6_manage_charging_location {
     private String tempName;
     private String tempAddress;
 
+    private int targetDeleteId;
+    private boolean deleteResult;
+    private String systemNotification;
+
+
 
 
     @Given("owner is on the system main class.")
@@ -155,8 +160,6 @@ public class StepDefinition_epic6_manage_charging_location {
         assertTrue(lastOutput.trim().contains(expectedOutput.trim()));
     }
 
-
-
     private String stripQuotes(String value) {
         if (value == null) return null;
         value = value.trim();
@@ -193,5 +196,93 @@ public class StepDefinition_epic6_manage_charging_location {
     @And("does not contain {string}")
     public void doesNotContain(String arg0) {
         assertFalse(testOutput.contains(arg0));
+    }
+
+    // ==========================
+    // User Story 6.4 – DELETE
+    // ==========================
+
+    @Given("a charging location exists with id {int}, name {string} and address {string} and has no stations")
+    public void aChargingLocationExistsWithNoStations(int id, String name, String address) {
+
+        ChargingLocation loc = locationManager.createLocation(name, address);
+        assertNotNull(loc, "Location must be created for this scenario.");
+
+        loc.setLocationId((long) id);
+        targetDeleteId = id;
+
+        assertTrue(loc.getStations().isEmpty(), "Location must start with no stations");
+        assertNotNull(locationManager.findById(id), "Location must exist in manager");
+    }
+
+    @Given("a charging location exists with id {int}, name {string} and address {string} and has stations")
+    public void aChargingLocationExistsWithStations(int id, String name, String address) {
+
+        ChargingLocation loc = locationManager.createLocation(name, address);
+        assertNotNull(loc, "Location must be created for this scenario.");
+
+        loc.setLocationId((long) id);
+        targetDeleteId = id;
+
+        ChargingStation st = new ChargingStation(
+                loc.getLocationId(),
+                "stationBlocker",
+                StationType.AC,
+                11,
+                0.30f
+        );
+        loc.addStation(st);
+
+        assertFalse(loc.getStations().isEmpty(), "Location must contain stations");
+        assertNotNull(locationManager.findById(id), "Location must exist in manager");
+    }
+
+    @When("the owner requests deletion of the charging location with id {int}")
+    public void theOwnerRequestsDeletionOfTheChargingLocationWithId(int id) {
+
+        targetDeleteId = id;
+        deleteResult = locationManager.deleteLocation(id);
+
+        if (!deleteResult) {
+            ChargingLocation loc = locationManager.findById(id);
+            if (loc != null && loc.getStations() != null && !loc.getStations().isEmpty()) {
+                systemNotification = "Deletion rejected: location contains charging stations";
+            } else if (loc == null) {
+                systemNotification = "Deletion rejected: location not found";
+            } else {
+                systemNotification = "Deletion rejected";
+            }
+        }
+    }
+
+    @Then("the system deletes the charging location")
+    public void theSystemDeletesTheChargingLocation() {
+        assertTrue(deleteResult, "Expected deletion to succeed");
+        assertNull(locationManager.findById(targetDeleteId), "Location should not exist after deletion");
+    }
+
+    @Then("the system rejects the deletion and returns a system notification {string}")
+    public void theSystemRejectsTheDeletionAndReturnsASystemNotification(String expected) {
+        assertFalse(deleteResult, "Expected deletion to be rejected");
+        assertEquals(expected, systemNotification);
+
+        if (!"Deletion rejected: location not found".equals(expected)) {
+            assertNotNull(locationManager.findById(targetDeleteId), "Location should still exist after rejection");
+        }
+    }
+
+
+    @And("when all charging locations are retrieved, the location with id {int} is not included")
+    public void whenAllChargingLocationsAreRetrievedTheLocationWithIdIsNotIncluded(int id) {
+        boolean exists = locationManager.getAllLocations().stream()
+                .anyMatch(l -> l.getLocationId() != null && l.getLocationId().longValue() == id);
+        assertFalse(exists, "Deleted location should not be included in the returned list");
+    }
+
+    @And("when all charging locations are retrieved, the location with id {int} is included")
+    public void whenAllChargingLocationsAreRetrievedTheLocationWithIdIsIncluded(int id) {
+        boolean exists = locationManager.getAllLocations().stream()
+                .anyMatch(l -> l.getLocationId() != null && l.getLocationId().longValue() == id);
+        assertTrue(exists, "Location should still be included in the returned list");
     }
 }

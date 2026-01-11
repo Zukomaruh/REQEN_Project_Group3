@@ -61,3 +61,43 @@ Feature: Station Network Management
     And the Locations information is requested
     Then it contains "Hauptbahnhof"
     And does not contain "Südbahnhof"
+
+
+
+    # User Story 6.4 – delete Charging Locations
+
+  Scenario Outline: Delete charging location with no stations succeeds
+    Given owner is on the system main class.
+    And a charging location exists with id <id>, name "<name>" and address "<address>" and has no stations
+    When the owner requests deletion of the charging location with id <id>
+    Then the system deletes the charging location
+    And when all charging locations are retrieved, the location with id <id> is not included
+
+    Examples:
+      | id   | name        | address                    |
+      | 1001 | Linz Center | Hauptplatz 1, 4020 Linz     |
+      | 1002 | Wien West   | Europaplatz 2, 1150 Wien   |
+
+  Scenario Outline: Delete charging location with stations is rejected
+    Given owner is on the system main class.
+    And a charging location exists with id <id>, name "<name>" and address "<address>" and has stations
+    When the owner requests deletion of the charging location with id <id>
+    Then the system rejects the deletion and returns a system notification "Deletion rejected: location contains charging stations"
+    And when all charging locations are retrieved, the location with id <id> is included
+
+    Examples:
+      | id   | name       | address                          |
+      | 2001 | Graz Süd   | Münzgrabenstraße 90, 8010 Graz   |
+      | 2002 | Salzburg   | Alpenstraße 99, 5020 Salzburg   |
+
+  Scenario Outline: Delete non-existing charging location is rejected
+    Given owner is on the system main class.
+    When the owner requests deletion of the charging location with id <id>
+    Then the system rejects the deletion and returns a system notification "Deletion rejected: location not found"
+    And when all charging locations are retrieved, the location with id <id> is not included
+
+    Examples:
+      | id   |
+      | 9999 |
+      | 8888 |
+
