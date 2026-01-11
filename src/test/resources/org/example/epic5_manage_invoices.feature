@@ -34,3 +34,19 @@ Feature: Invoice Management
     When the customer requests the invoice list
     Then the system returns an empty list
     And a message "No invoices found" is displayed
+
+  Scenario: Owner deletes an invoice older than 7 years
+    Given a "Customer" with ID 1001 exists
+    And the customer has the following "Invoices":
+      | stationName | chargingMode | kWh | duration | pricePerKWh | totalCost | startTime            | status |
+      | Station Old | AC           | 10  | 60       | 0.50        | 5.00      | 2017-01-01T08:00:00  | PAID   |
+    When the owner deletes the invoice
+    Then It gets deleted
+
+  Scenario: Owner cannot delete an invoice that is only 6 years old
+    Given a "Customer" with ID 1001 exists
+    And the customer has the following "Invoices":
+      | stationName | chargingMode | kWh | duration | pricePerKWh | totalCost | startTime            | status |
+      | Station New | DC           | 20  | 30       | 0.80        | 16.00     | 2020-01-01T08:00:00  | PAID   |
+    When the owner deletes it.
+    Then the Invoice does not get deleted and an error is printed.

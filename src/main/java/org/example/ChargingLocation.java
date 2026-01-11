@@ -23,6 +23,7 @@ public class ChargingLocation {
     private String name;
     private String address;
     private List<ChargingStation> stations = new ArrayList<>();
+    private float pricing;
 
     public ChargingLocation(String name, String address) {
         this.locationId = System.currentTimeMillis();
@@ -84,5 +85,18 @@ public class ChargingLocation {
                 ", address='" + address + '\'' +
                 ", stations=" + stations +
                 '}';
+    }
+
+    public float getPricing() {
+        return pricing;
+    }
+
+    public void setPricing(float pricing) {
+        if(pricing < 0){
+            this.pricing = pricing;
+        }
+        for (ChargingStation station : stations) {
+            station.setPricing(pricing);
+        }
     }
 }

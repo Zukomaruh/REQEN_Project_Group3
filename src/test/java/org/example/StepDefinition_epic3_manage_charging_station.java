@@ -10,6 +10,7 @@ import org.example.enums.SessionStatus;
 import org.example.enums.StationStatus;
 import org.example.enums.StationType;
 import org.example.managementClasses.ChargingProcessManager;
+import org.example.managementClasses.ChargingLocationManager;
 import org.example.managementClasses.StationManager;
 
 import java.io.ByteArrayOutputStream;
@@ -201,6 +202,7 @@ public class StepDefinition_epic3_manage_charging_station {
 
             location.addStation(currentStation);
         }
+        ChargingLocationManager.getInstance().getLocation(location.getLocationId()).setPricing(pricing);
     }
 
     @When("the customer requests the charging stations information")
