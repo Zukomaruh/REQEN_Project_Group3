@@ -41,11 +41,13 @@ public class ChargingLocationManager {
      */
     public ChargingLocation createLocation(String name, String address) {
         if (name == null || name.isBlank() || address == null || address.isBlank()) {
+            System.out.println("Invalid Input, Location not created");
             return null;
         }
 
         ChargingLocation location = new ChargingLocation(name.trim(), address.trim());
         locations.add(location);
+        System.out.println("Charging Location created successfully");
         return location;
     }
 
