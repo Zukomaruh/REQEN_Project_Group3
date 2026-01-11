@@ -165,7 +165,7 @@ public class Account {
             System.out.println("Charging terminated: Insufficient balance.\nMissing amount: "+(pricing-this.getPrepaidBalance()));
             return false;
         }
-        System.out.println("Sufficient prepaid balance.\nBalance after charging: "+(pricing-this.getPrepaidBalance()));
+        System.out.println("Sufficient prepaid balance.\nBalance after charging: "+(this.getPrepaidBalance()-pricing));
         return true;
     }
 
