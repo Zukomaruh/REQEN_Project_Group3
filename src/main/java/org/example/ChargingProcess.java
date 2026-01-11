@@ -70,6 +70,7 @@ public class ChargingProcess {
             this.status = SessionStatus.COMPLETED;
             this.timeToFullMinutes = 0;
         }
+        System.out.printf("Charging completed!\nNew battery percentage: %d\n",this.batteryPercentage);
     }
 
     public void complete() {
@@ -186,5 +187,15 @@ public class ChargingProcess {
 
     public void setStatus(SessionStatus status) {
         this.status = status;
+    }
+
+    public void getChargingInformation() {
+        ChargingProcess process = this;
+        System.out.printf("customerID: %.2f\n",process.getCustomerId() +
+                "    stationID: %.2f\n",process.getStationId() +
+                "    batteryPercentage: %.2f\n",process.getBatteryPercentage() +
+                "    powerKW: %.2f\n",process.getPowerKW() +
+                "    timeToFullMinutes: %.2f\n",process.getTimeToFullMinutes() +
+                "    status: %s",process.getStatus());
     }
 }
