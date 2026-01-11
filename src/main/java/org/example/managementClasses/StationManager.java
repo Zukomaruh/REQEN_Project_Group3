@@ -89,6 +89,7 @@ public class StationManager {
         }
 
         station.setPricing((float) newPrice);
+        System.out.println("Update successful! New Pricing: "+station.getPricing()+" EUR/kWh");
     }
 
     /**
