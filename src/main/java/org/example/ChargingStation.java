@@ -31,7 +31,11 @@ public class ChargingStation {
             this.type = type;
             this.capacity = capacity;
             this.status = StationStatus.AVAILABLE;
-            this.pricing = ChargingLocationManager.getInstance().getLocation(locationId).getPricing();
+            if(ChargingLocationManager.getInstance().getLocation(locationId) != null){
+                this.pricing = ChargingLocationManager.getInstance().getLocation(locationId).getPricing();
+            }else {
+                this.pricing = pricing;
+            }
             System.out.println("Charging station created successfully");
         }else{
             System.out.println("Creation failed! Please enter valid Station settings");
@@ -45,7 +49,11 @@ public class ChargingStation {
             this.type = type;
             this.capacity = capacity;
             this.status = StationStatus.AVAILABLE;
-            this.pricing = pricing;
+            if(ChargingLocationManager.getInstance().getLocation(locationId) != null){
+                this.pricing = ChargingLocationManager.getInstance().getLocation(locationId).getPricing();
+            }else {
+                this.pricing = pricing;
+            }
             System.out.println("Charging station created successfully, it was not added to a location");
         }else{
             System.out.println("Creation failed! Please enter valid Station settings");
