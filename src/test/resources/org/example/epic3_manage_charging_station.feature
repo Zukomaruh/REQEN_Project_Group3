@@ -47,7 +47,7 @@ Feature: Charging Station
     And these stations exist:
       | stationName        | type | capacity | status       | pricing   |
       | station1001        | AC   | 150      | AVAILABLE    | 0.55      |
-      | station1002        | DC   | 50       | CHARGING     | 0.35      |
+      | station1002        | DC   | 50       | CHARGING     | 0.55      |
     When the customer requests the charging stations information
     Then the output looks like this:
     """
@@ -64,7 +64,7 @@ Feature: Charging Station
     type: DC
     capacity: 50 kWh
     status: CHARGING
-    price: 0,35 EUR/kWh
+    price: 0,55 EUR/kWh
     ---
     """
 
