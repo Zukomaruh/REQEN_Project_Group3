@@ -160,33 +160,27 @@ public class Main {
         InvoiceManager invoiceManager = InvoiceManager.getInstance();
 
         // US 5.1: Read invoices
-        System.out.println(ANSI_GREEN + "\nCustomer 1001 checks invoices: Two there, from Station A and B." + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nI want to read all my invoices from different charging stations …" + ANSI_RESET);
         Invoice inv1 = new Invoice(1001L, "Station A", "AC", 10, 60, 0.50, 5.00, new Date(), "PAID");
         Invoice inv2 = new Invoice(1001L, "Station B", "DC", 50, 30, 0.80, 40.00, new Date(System.currentTimeMillis() + 86400000), "PAID");
         invoiceManager.createInvoice(inv1);
         invoiceManager.createInvoice(inv2);
         List<Invoice> invoices = invoiceManager.getInvoicesForCustomer(1001L);
-        System.out.println(ANSI_GREEN + "\nGot " + invoices.size() + " invoices!" + ANSI_RESET);
-
-        // US 5.2: Sort invoices
-        System.out.println(ANSI_GREEN + "\nSorted by date, oldest first. Nice and orderly!" + ANSI_RESET);
-        // getInvoicesForCustomer already sorts
-
+        for (Invoice invoice : invoices){
+            System.out.println(invoice);
+        }
         // Edge: No invoices
-        System.out.println(ANSI_GREEN + "\nNew customer 9999: No invoices? Empty list!" + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\n… but I don't have any invoices yet. So nothing is printed out." + ANSI_RESET);
         invoices = invoiceManager.getInvoicesForCustomer(9999L);
-        System.out.println(ANSI_GREEN + "\nIndeed empty." + ANSI_RESET);
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 6 – Manage Charging Location ================" + ANSI_RESET);
         // US 6.1: Create valid
-        System.out.println(ANSI_GREEN + "\nOwner creates 'FunPark' at 'Party Street 99'." + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nValid information entered when creating a new charging location." + ANSI_RESET);
         ChargingLocation funLocation = locationManager.createLocation("FunPark", "Party Street 99");
-        System.out.println(ANSI_GREEN + "\nCreated! ID: " + funLocation.getLocationId() + ANSI_RESET);
 
         // US 6.1: Invalid
-        System.out.println(ANSI_GREEN + "\nTry empty name and address? Nope!" + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nInvalid information entered when creating a new charging location." + ANSI_RESET);
         ChargingLocation invalidAccount = locationManager.createLocation("", "");
-        System.out.println(ANSI_GREEN + "\nNull, as expected." + ANSI_RESET);
 
         // US 6.2: Read all
         System.out.println(ANSI_GREEN + "\nList all locations!" + ANSI_RESET);
@@ -194,61 +188,50 @@ public class Main {
         for (ChargingLocation loc : allLocations) {
             System.out.println(loc.toString());
         }
-
         // US 6.3: Update
-        System.out.println(ANSI_GREEN + "\nRename 'FunPark' to 'MegaFunPark'." + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nI want to update the location name to MegaFunPark." + ANSI_RESET);
         funLocation.setName("MegaFunPark");
-        System.out.println(ANSI_GREEN + "\nUpdated: " + funLocation.toString() + ANSI_RESET);
+        System.out.println(locationManager.getLocation(funLocation.getName()));
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
         PricingManager pricingManager = new PricingManager();
 
         // US 8.1: Create pricing
-        System.out.println(ANSI_GREEN + "\nCreate pricing rule ID 1001 for location 1001, valid 010124-311224, with all components." + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nValid information entered when creating a new pricing rule." + ANSI_RESET);
         PricingRules rule = new PricingRules();
         rule.setPricingId(1001);
         rule.setLocationId(1001);
-        rule.setValidFrom(010124);
+        rule.setValidFrom(101025);
         rule.setValidTo(311224);
         rule.getPriceComponents().add(PriceComponent.KWH_AC);
         rule.getPriceComponents().add(PriceComponent.KWH_DC);
         rule.getPriceComponents().add(PriceComponent.CHARGING_MINUTES);
         pricingManager.addPricingRule(rule);
-        rule.setActive(true);
-        System.out.println(ANSI_GREEN + "\nRule created and active!" + ANSI_RESET);
 
-        // US 8.1: Invalid create (assume manual invalid set)
-        System.out.println(ANSI_GREEN + "\nBad data? Discard!" + ANSI_RESET);
-        // No specific invalid method, narrative
+        // US 8.1: Invalid create
+        System.out.println(ANSI_GREEN + "\nInvalid information entered when creating a new charging location." + ANSI_RESET);
+        rule.setValidTo(321225);
+        pricingManager.addPricingRule(rule);
 
         // US 8.2: Read current
-        System.out.println(ANSI_GREEN + "\nView current price: 0.30 EUR." + ANSI_RESET);
+        //System.out.println(ANSI_GREEN + "\nView current price: 0.30 EUR." + ANSI_RESET);
         // Assume associated with station
 
         // US 8.2: Display latest
-        System.out.println(ANSI_GREEN + "\nUpdate to 0.40, now shows latest." + ANSI_RESET);
+        //System.out.println(ANSI_GREEN + "\nUpdate to 0.40, now shows latest." + ANSI_RESET);
 
         // US 8.2: Delete
-        System.out.println(ANSI_GREEN + "\nDelete rule 1001? Gone!" + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nI want to delete a rule." + ANSI_RESET);
         pricingManager.removePricingRule(1001);
 
         // US 8.3: Update immediate
-        System.out.println(ANSI_GREEN + "\nUpdate to 0.40: Ongoing sessions keep 0.30, new get 0.40." + ANSI_RESET);
+        //System.out.println(ANSI_GREEN + "\nUpdate to 0.40: Ongoing sessions keep 0.30, new get 0.40." + ANSI_RESET);
         // Narrative, assume sessions
 
         // US 8.3: Schedule future
-        System.out.println(ANSI_GREEN + "\nUpdate all points to 0.40." + ANSI_RESET);
+        //System.out.println(ANSI_GREEN + "\nUpdate all points to 0.40." + ANSI_RESET);
 
         // US 8.3: Multiple updates
-        System.out.println(ANSI_GREEN + "\nUpdate again to 0.50. Pricing party!" + ANSI_RESET);
-
-        System.out.println(ANSI_YELLOW + "\n================ EPIC 9 – Manage Invoices ================" + ANSI_RESET);
-        // US 5.1/9.1: Read (already in EPIC 5, but repeat for completeness)
-        System.out.println(ANSI_GREEN + "\nCustomer reads invoices again. Still there!" + ANSI_RESET);
-        invoices = invoiceManager.getInvoicesForCustomer(1001L);
-
-        // US 5.2/9.2: Sort (already shown)
-
-        // Edge: Empty (already shown)
+        //System.out.println(ANSI_GREEN + "\nUpdate again to 0.50. Pricing party!" + ANSI_RESET);
     }
 }
