@@ -191,11 +191,7 @@ public class ChargingProcess {
 
     public void getChargingInformation() {
         ChargingProcess process = this;
-        System.out.printf("customerID: %.2f\n",process.getCustomerId() +
-                "    stationID: %.2f\n",process.getStationId() +
-                "    batteryPercentage: %.2f\n",process.getBatteryPercentage() +
-                "    powerKW: %.2f\n",process.getPowerKW() +
-                "    timeToFullMinutes: %.2f\n",process.getTimeToFullMinutes() +
-                "    status: %s",process.getStatus());
+        System.out.printf("customerID: %s\nstationID: %s\nbatteryPercentage: %s\npowerKW: %s\ntimeToFullMinutes: %s\nstatus: %s\n"
+                ,process.getCustomerId(), process.getStationId(), process.getBatteryPercentage(), process.getPowerKW(), process.getTimeToFullMinutes(), process.getStatus());
     }
 }
