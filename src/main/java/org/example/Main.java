@@ -75,7 +75,7 @@ public class Main {
 
         //2.2
         System.out.println(ANSI_GREEN + "\nI want to charge my car at a station.\nBut my balance is too low to cover charging costs." + ANSI_RESET);
-        chargingStation.setPricing(600);
+        chargingStation.setPricing(30);
         account.canStartCharging(chargingStation);
         System.out.println(ANSI_GREEN + "\nI top my balance up so that I can start charging." + ANSI_RESET);
         accountManager.readPrepaidBalance(account);
@@ -95,7 +95,7 @@ public class Main {
         // US 3.1: Create charging station
         System.out.println(ANSI_GREEN + "\nAs the owner, I create a charging station without a name …" + ANSI_RESET);
         //Exception thread
-        //ChargingStation newStation = stationManager.createStation(demoLocationId, null, StationType.AC, 100, 0.35);
+        //ChargingStation invalidStation = stationManager.createStation(demoLocationId, null, StationType.AC, 100, 0.35);
         System.out.println(ANSI_GREEN + "\n… but forgot that a charging station must be given a name!" + ANSI_RESET);
         ChargingStation newStation = stationManager.createStation(demoLocationId, "SuperCharger1", StationType.AC, 100, 0.35);
         stationManager.addLocation(demoLocation);
@@ -193,7 +193,7 @@ public class Main {
         funLocation.setName("MegaFunPark");
         System.out.println(locationManager.getLocation(funLocation.getName()));
 
-        System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
+        /*System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
         PricingManager pricingManager = new PricingManager();
 
         // US 8.1: Create pricing
@@ -233,5 +233,5 @@ public class Main {
 
         // US 8.3: Multiple updates
         //System.out.println(ANSI_GREEN + "\nUpdate again to 0.50. Pricing party!" + ANSI_RESET);
-    }
+    */}
 }
