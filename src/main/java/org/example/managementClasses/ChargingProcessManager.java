@@ -1,5 +1,6 @@
 package org.example.managementClasses;
 
+import org.example.Account;
 import org.example.ChargingProcess;
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
@@ -33,15 +34,32 @@ public class ChargingProcessManager {
                                         int targetBatteryPercentage,
                                         int powerKW,
                                         int timeToFullMinutes) {
+        StationManager stationManager = StationManager.getInstance();
+        float pricePerKWh = stationManager.findStationByName(stationName).getPricing();
+        Account account = AccountManager.getInstance().readAccount(customerId);
 
-        if (customerId == null || stationId == null
-                || stationName == null || stationName.isBlank()
+        int percentageToCharge = targetBatteryPercentage - initialBatteryPercentage;
+        double minutesCharging = ((double) percentageToCharge / 100) * timeToFullMinutes;
+        double hoursCharging = minutesCharging / 60.0;
+        double chargedKWh = hoursCharging * powerKW;
+        double totalCost = chargedKWh * pricePerKWh;
+
+        if (
+                customerId == null
+                || stationId == null
+                || stationName == null
+                || stationName.isBlank()
                 || mode == null
-                || initialBatteryPercentage < 0 || initialBatteryPercentage > 100
-                || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
+                || initialBatteryPercentage < 0
+                || targetBatteryPercentage < 0
+                || targetBatteryPercentage > 100
                 || initialBatteryPercentage > targetBatteryPercentage
                 || powerKW <= 0
+                || account == null
+                || account.getPrepaidBalance() < totalCost
+
         ) {
+            System.out.println("Charging terminated: Insufficient balance.\nMissing amount: "+(totalCost-account.getPrepaidBalance()));
             return null;
         }
 
@@ -60,6 +78,7 @@ public class ChargingProcessManager {
         );
 
         processes.put(sessionId, process);
+        System.out.println("Sufficient prepaid balance.\nBalance after charging: "+(account.getPrepaidBalance()-totalCost));
         return process;
     }
 
@@ -105,7 +124,8 @@ public class ChargingProcessManager {
             if (p != null
                     && p.getStationId() != null
                     && p.getStationId() == stationId
-                    && p.getStatus() == SessionStatus.ACTIVE) {
+                    && p.getStatus() == SessionStatus.ACTIVE)
+            {
                 return true;
             }
         }

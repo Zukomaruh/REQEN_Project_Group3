@@ -5,10 +5,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.example.enums.ChargingMode;
-import org.example.enums.SessionStatus;
-import org.example.enums.StationStatus;
-import org.example.enums.StationType;
+import org.example.enums.*;
+import org.example.managementClasses.AccountManager;
 import org.example.managementClasses.ChargingProcessManager;
 import org.example.managementClasses.ChargingLocationManager;
 import org.example.managementClasses.StationManager;
@@ -336,6 +334,12 @@ public class StepDefinition_epic3_manage_charging_station {
     @Given("the charging station is associated with an active charging process")
     public void theChargingStationIsAssociatedWithAnActiveChargingProcess() {
         // create ACTIVE process for the station we created in the previous step
+        Account account = new Account("hallo", "hallo123@©mal.com", "paswwoIrd123", AccountType.CUSTOMER);
+        account.setUserId(1L);
+        account.setPrepaidBalance(500);
+        AccountManager.getInstance().addAccount(account);
+        stationManager.findStationByName(stationNameToDelete).setPricing(0.3f);
+
         processManager.startProcess(
                 1L,
                 actualStationIdToDelete,
