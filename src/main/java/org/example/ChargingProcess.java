@@ -2,7 +2,9 @@ package org.example;
 
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
+import org.example.enums.StationStatus;
 import org.example.managementClasses.AccountManager;
+import org.example.managementClasses.StationManager;
 
 public class ChargingProcess {
 
@@ -22,6 +24,7 @@ public class ChargingProcess {
     private int drivenDistanceKm;
 
     private SessionStatus status;
+    StationManager stationManager = StationManager.getInstance();
 
     public ChargingProcess(Long sessionId,
                            Long customerId,
@@ -75,6 +78,7 @@ public class ChargingProcess {
 
     public void complete() {
         this.status = SessionStatus.COMPLETED;
+        stationManager.findStationByName(this.stationName).setStatus(StationStatus.AVAILABLE);
         this.batteryPercentage = Math.max(batteryPercentage, targetBatteryPercentage);
         if (this.batteryPercentage > 100) {
             this.batteryPercentage = 100;

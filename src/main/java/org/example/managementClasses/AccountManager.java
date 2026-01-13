@@ -73,7 +73,7 @@ public class AccountManager {
                     account.setUsername(username);
                 }
             }
-            System.out.printf("Username updated to %s.",username);
+            System.out.printf("Username updated to %s\n",username);
         }
     }
 

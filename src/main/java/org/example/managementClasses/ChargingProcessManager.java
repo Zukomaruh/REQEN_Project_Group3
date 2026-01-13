@@ -1,10 +1,16 @@
 package org.example.managementClasses;
 
+import org.example.Account;
 import org.example.ChargingProcess;
+import org.example.Invoice;
 import org.example.enums.ChargingMode;
 import org.example.enums.SessionStatus;
+import org.example.enums.StationStatus;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,15 +39,34 @@ public class ChargingProcessManager {
                                         int targetBatteryPercentage,
                                         int powerKW,
                                         int timeToFullMinutes) {
+        StationManager stationManager = StationManager.getInstance();
+        InvoiceManager invoiceManager = InvoiceManager.getInstance();
+        Account account = AccountManager.getInstance().readAccount(customerId);
+        float pricePerKWh = stationManager.findStationByName(stationName).getPricing();
 
-        if (customerId == null || stationId == null
-                || stationName == null || stationName.isBlank()
+
+        int percentageToCharge = targetBatteryPercentage - initialBatteryPercentage;
+        double minutesCharging = ((double) percentageToCharge / 100) * timeToFullMinutes;
+        double hoursCharging = minutesCharging / 60.0;
+        double chargedKWh = hoursCharging * powerKW;
+        double totalCost = chargedKWh * pricePerKWh;
+
+        if (account == null) {return null;}
+        if (
+                stationId == null
+                || stationName == null
+                || stationName.isBlank()
                 || mode == null
-                || initialBatteryPercentage < 0 || initialBatteryPercentage > 100
-                || targetBatteryPercentage < 0 || targetBatteryPercentage > 100
+                || initialBatteryPercentage < 0
+                || targetBatteryPercentage < 0
+                || targetBatteryPercentage > 100
                 || initialBatteryPercentage > targetBatteryPercentage
                 || powerKW <= 0
+                || account.getPrepaidBalance() < totalCost
+
         ) {
+            System.out.printf("Charging terminated: Insufficient balance.\nMissing amount: %.2f"
+                    ,Double.parseDouble(String.valueOf(totalCost-account.getPrepaidBalance())));
             return null;
         }
 
@@ -58,8 +83,15 @@ public class ChargingProcessManager {
                 timeToFullMinutes,
                 SessionStatus.ACTIVE
         );
-
         processes.put(sessionId, process);
+        process.setStatus(SessionStatus.ACTIVE);
+        stationManager.findStationByName(stationName).setStatus(StationStatus.CHARGING);
+        int minutesCharging2 = Integer.parseInt(String.valueOf(Math.round(minutesCharging)));
+        Invoice invoice = new Invoice(customerId, stationName,mode.toString(),chargedKWh, minutesCharging2, pricePerKWh, totalCost, Date.from(Instant.now()), "PAID");
+        invoiceManager.createInvoice(invoice);
+        System.out.printf("Sufficient prepaid balance.\nCharging cost: %.2f\nBalance after charging: %.2f"
+                ,Double.parseDouble(String.valueOf(totalCost))
+                ,Double.parseDouble(String.valueOf(account.getPrepaidBalance()-totalCost)));
         return process;
     }
 
@@ -105,7 +137,8 @@ public class ChargingProcessManager {
             if (p != null
                     && p.getStationId() != null
                     && p.getStationId() == stationId
-                    && p.getStatus() == SessionStatus.ACTIVE) {
+                    && p.getStatus() == SessionStatus.ACTIVE)
+            {
                 return true;
             }
         }
