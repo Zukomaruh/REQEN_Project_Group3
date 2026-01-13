@@ -8,6 +8,7 @@ import org.example.managementClasses.InvoiceManager;
 import org.example.managementClasses.PricingManager;
 import org.example.managementClasses.StationManager;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class Main {
@@ -31,13 +32,13 @@ public class Main {
         //objects
         ChargingLocation Meidling123 = new ChargingLocation("Meidling123", "Meidling 123");
         ChargingStation StationA = new ChargingStation(Meidling123.getLocationId(), "Station A", StationType.AC, 50, 0.3f);
+        ChargingLocation Simmering = new ChargingLocation("Simmering123", "Simmering 123");
+        ChargingStation StationC = new ChargingStation(Meidling123.getLocationId(), "Station C", StationType.AC, 50, 0.3f);
         //add objects to managers
         stationManager.addLocation(Meidling123);
         stationManager.createStation(Meidling123.getLocationId(), StationA.getStationName(), StationA.getType(), StationA.getCapacity(), StationA.getPricing());
         //set variables
         Meidling123.setPricing(1.5f);
-        long simmering123Id = 0;
-        ChargingStation StationC = stationManager.createStation(simmering123Id, "StationB", StationType.AC, 100, 0.35);
         System.out.println("\n=============================================================");
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 1 – Account Management ================" + ANSI_RESET);
@@ -140,14 +141,13 @@ public class Main {
 
         // US 7.4: Delete station
         System.out.println(ANSI_GREEN + "\nDelete the charging station \"StationC\"!" + ANSI_RESET);
-        stationManager.addLocation(Hietzing123);
         boolean stationDeletionStatus = stationManager.deleteStationByStationId(StationC.getStationId(), processManager);
-        if (stationDeletionStatus) {
+        if(stationDeletionStatus) {
             System.out.println("The charging station was successfully deleted!");
-        } else {
+        }
+        else {
             System.out.println("The charging station was not successfully deleted!");
         }
-
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 4 – Charging Process Management ================" + ANSI_RESET);
         long customerId = account.getUserId();
@@ -174,19 +174,19 @@ public class Main {
         // US 4.3: Update station status on start
         System.out.println(ANSI_GREEN + "\nI want to check if the charging status changes accordingly when starting a process." + ANSI_RESET);
         StationB.setStatus(StationStatus.AVAILABLE);
-        System.out.println(ANSI_GREEN + "\nBefore starting charging, the station is: " + StationB.getStatus() + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nBefore starting charging, the station is: "+StationB.getStatus() + ANSI_RESET);
         process = processManager.startProcess(customerId, stationId, stationName, ChargingMode.ECO, 10, 50, 20, 90);
-        System.out.printf(ANSI_GREEN + "\nAfter starting charging, the station is: %s and the session is: %s", StationB.getStatus(), process.getStatus() + ANSI_RESET);
+        System.out.printf(ANSI_GREEN + "\nAfter starting charging, the station is: %s and the session is: %s",StationB.getStatus(), process.getStatus() + ANSI_RESET);
 
         // US 4.3: On finish
         process.complete();
         System.out.println();
-        System.out.printf(ANSI_GREEN + "\nWhen done charging, the station is: %s and the session is: %s", StationB.getStatus(), process.getStatus() + ANSI_RESET);
+        System.out.printf(ANSI_GREEN + "\nWhen done charging, the station is: %s and the session is: %s",StationB.getStatus(), process.getStatus() + ANSI_RESET);
 
         // US 4.3: Reject on unavailable
         StationB.setStatus(StationStatus.MAINTENANCE);
         System.out.println();
-        System.out.println(ANSI_GREEN + "\nWhen the station is under maintenance, charging is not possible and the status is set to: " + StationB.getStatus() + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "\nWhen the station is under maintenance, charging is not possible and the status is set to: "+StationB.getStatus() + ANSI_RESET);
         // processManager.startProcess would return null for invalid
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 5 – Invoice Management ================" + ANSI_RESET); // Assuming EPIC 5 is Invoices based on US 5.x
@@ -194,7 +194,7 @@ public class Main {
         // US 5.1: Read invoices
         System.out.println(ANSI_GREEN + "\nI want to read all my invoices from different charging stations …" + ANSI_RESET);
         List<Invoice> invoices = invoiceManager.getInvoicesForCustomer(account.getUserId());
-        for (Invoice invoice : invoices) {
+        for (Invoice invoice : invoices){
             System.out.println(invoice);
         }
         // Edge: No invoices
@@ -209,9 +209,10 @@ public class Main {
         invoiceManager.createInvoice(inv3);
         System.out.println(ANSI_GREEN + "\nNevermind! There is one invoice. But it is about to become seven years old. Will it be deleted?" + ANSI_RESET);
         boolean invoiceDeletionStatus = invoiceManager.deleteInvoice(inv3);
-        if (invoiceDeletionStatus) {
+        if(invoiceDeletionStatus) {
             System.out.println("The invoice was successfully deleted!");
-        } else {
+        }
+        else {
             System.out.println("The invoice was not successfully deleted!");
         }
 
@@ -238,13 +239,14 @@ public class Main {
         // US 6.4: Delete
         System.out.println(ANSI_GREEN + "\nI want to delete the charging location \"MegaFunPark\"." + ANSI_RESET);
         boolean locationDeletionStatus = locationManager.deleteLocation(funLocation.getLocationId());
-        if (locationDeletionStatus) {
+        if(locationDeletionStatus) {
             System.out.println("The charging location was successfully deleted!");
-        } else {
+        }
+        else {
             System.out.println("The charging location was not successfully deleted!");
         }
 
-        System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
+        /*System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
         PricingManager pricingManager = new PricingManager();
 
         // US 8.1: Create pricing
@@ -284,5 +286,5 @@ public class Main {
 
         // US 8.3: Multiple updates
         //System.out.println(ANSI_GREEN + "\nUpdate again to 0.50. Pricing party!" + ANSI_RESET);
-    }
+    */}
 }
