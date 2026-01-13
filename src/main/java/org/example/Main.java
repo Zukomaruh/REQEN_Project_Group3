@@ -9,10 +9,7 @@ import org.example.managementClasses.PricingManager;
 import org.example.managementClasses.StationManager;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -35,6 +32,8 @@ public class Main {
         //objects
         ChargingLocation Meidling123 = new ChargingLocation("Meidling123", "Meidling 123");
         ChargingStation StationA = new ChargingStation(Meidling123.getLocationId(), "Station A", StationType.AC, 50, 0.3f);
+        ChargingLocation Simmering = new ChargingLocation("Simmering123", "Simmering 123");
+        ChargingStation StationC = new ChargingStation(Meidling123.getLocationId(), "Station C", StationType.AC, 50, 0.3f);
         //add objects to managers
         stationManager.addLocation(Meidling123);
         stationManager.createStation(Meidling123.getLocationId(), StationA.getStationName(), StationA.getType(), StationA.getCapacity(), StationA.getPricing());
@@ -93,7 +92,7 @@ public class Main {
                 90,
                 50,
                 60
-                );
+        );
         System.out.println(ANSI_GREEN + "\nI top my balance up so that I can start charging." + ANSI_RESET);
         accountManager.readPrepaidBalance(account);
         account.setPrepaidAmount("100");
@@ -111,6 +110,7 @@ public class Main {
         );
         process.complete();
 
+        System.out.println();
         System.out.println(ANSI_YELLOW + "\n================ EPIC 3 – Manage Charging Station ================" + ANSI_RESET);
         ChargingLocation Hietzing123 = new ChargingLocation("Hietzing 123", "Hietzing 123");
         long hietzing123Id = Hietzing123.getLocationId();
@@ -138,6 +138,16 @@ public class Main {
         System.out.println(ANSI_GREEN + "\nUpdate pricing of \"StationB\" to 1.2 and check if latest shows." + ANSI_RESET);
         stationManager.updatePricingByName(StationB.getStationName(), 1.20);
         System.out.println(StationB.getInformation());
+
+        // US 7.4: Delete station
+        System.out.println(ANSI_GREEN + "\nDelete the charging station \"StationC\"!" + ANSI_RESET);
+        boolean stationDeletionStatus = stationManager.deleteStationByStationId(StationC.getStationId(), processManager);
+        if(stationDeletionStatus) {
+            System.out.println("The charging station was successfully deleted!");
+        }
+        else {
+            System.out.println("The charging station was not successfully deleted!");
+        }
 
         System.out.println(ANSI_YELLOW + "\n================ EPIC 4 – Charging Process Management ================" + ANSI_RESET);
         long customerId = account.getUserId();
@@ -210,6 +220,16 @@ public class Main {
         System.out.println(ANSI_GREEN + "\nI want to update the location name to MegaFunPark." + ANSI_RESET);
         funLocation.setName("MegaFunPark");
         System.out.println(locationManager.getLocation(funLocation.getName()));
+
+        // US 6.4: Delete
+        System.out.println(ANSI_GREEN + "\nI want to delete the charging location \"MegaFunPark\"." + ANSI_RESET);
+        boolean locationDeletionStatus = locationManager.deleteLocation(funLocation.getLocationId());
+        if(locationDeletionStatus) {
+            System.out.println("The charging location was successfully deleted!");
+        }
+        else {
+            System.out.println("The charging location was not successfully deleted!");
+        }
 
         /*System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
         PricingManager pricingManager = new PricingManager();
