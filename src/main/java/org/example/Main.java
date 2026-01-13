@@ -8,11 +8,7 @@ import org.example.managementClasses.InvoiceManager;
 import org.example.managementClasses.PricingManager;
 import org.example.managementClasses.StationManager;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -139,6 +135,18 @@ public class Main {
         stationManager.updatePricingByName(StationB.getStationName(), 1.20);
         System.out.println(StationB.getInformation());
 
+        // US 7.4: Delete station
+        System.out.println(ANSI_GREEN + "\nDelete the charging station \"SuperCharger1\"!" + ANSI_RESET);
+        ChargingProcessManager processManager = ChargingProcessManager.getInstance();
+        boolean stationDeletionStatus = stationManager.deleteStationByStationId(newStation.getStationId(), processManager);
+        if(stationDeletionStatus) {
+            System.out.println("The charging station was successfully deleted!");
+        }
+        else {
+            System.out.println("The charging station was not successfully deleted!");
+        }
+
+
         System.out.println(ANSI_YELLOW + "\n================ EPIC 4 – Charging Process Management ================" + ANSI_RESET);
         long customerId = account.getUserId();
         long stationId = StationB.getStationId();
@@ -191,6 +199,21 @@ public class Main {
         System.out.println(ANSI_GREEN + "\n… but I don't have any invoices yet. So nothing is printed out." + ANSI_RESET);
         invoices = invoiceManager.getInvoicesForCustomer(9999L);
 
+        // US 9.4: Delete
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, -7);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        Invoice inv3 = new Invoice(1001L, "Station B", "DC", 50, 30, 0.80, 40.00, cal.getTime(), "PAID");
+        invoiceManager.createInvoice(inv3);
+        System.out.println(ANSI_GREEN + "\nNevermind! There is one invoice. But it is about to become seven years old. Will it be deleted?" + ANSI_RESET);
+        boolean invoiceDeletionStatus = invoiceManager.deleteInvoice(inv3);
+        if(invoiceDeletionStatus) {
+            System.out.println("The invoice was successfully deleted!");
+        }
+        else {
+            System.out.println("The invoice was not successfully deleted!");
+        }
+
         System.out.println(ANSI_YELLOW + "\n================ EPIC 6 – Manage Charging Location ================" + ANSI_RESET);
         // US 6.1: Create valid
         System.out.println(ANSI_GREEN + "\nValid information entered when creating a new charging location." + ANSI_RESET);
@@ -211,7 +234,17 @@ public class Main {
         funLocation.setName("MegaFunPark");
         System.out.println(locationManager.getLocation(funLocation.getName()));
 
-        /*System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
+        // US 6.4: Delete
+        System.out.println(ANSI_GREEN + "\nI want to delete the charging location \"MegaFunPark\"." + ANSI_RESET);
+        boolean locationDeletionStatus = locationManager.deleteLocation(funLocation.getLocationId());
+        if(locationDeletionStatus) {
+            System.out.println("The charging location was successfully deleted!");
+        }
+        else {
+            System.out.println("The charging location was not successfully deleted!");
+        }
+
+        System.out.println(ANSI_YELLOW + "\n================ EPIC 8 – Manage Pricing ================" + ANSI_RESET);
         PricingManager pricingManager = new PricingManager();
 
         // US 8.1: Create pricing
